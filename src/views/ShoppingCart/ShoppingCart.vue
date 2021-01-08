@@ -6,7 +6,7 @@
     <div v-if="dataList && dataList.length > 0" class="ShoppingCart_box response">
       <h1 class="ShoppingCart_box_h1">
         {{ $t('ShoppingCart.Totalofyourshoppingcart') }}
-        <span>$ {{TotalPrice}}</span>
+        <span>$ {{$Thousands(TotalPrice)}}</span>
       </h1>
       <h2 class="ShoppingCart_box_h2" @click="toProductZone()">{{ $t('ShoppingCart.continueshopping') }}></h2>
       <div class="ShoppingCart_box_content">
@@ -19,26 +19,26 @@
         <div class="content_center" v-for="(item, index) in dataList" :key="index">
           <div class="content_center_big">
             <div class="content_center_big_img">
-              <img :src="item.imgUrl" alt="" />
+              <img :src="item.pic" alt="" />
             </div>
             <div class="content_center_big_title">
-              <p :title="item.title">{{item.title}}</p>
-              <img @click="openPopup(index)" src="@/assets/img/ShoppingCartDelete.png" alt="" />
+              <p :title="item.name">{{item.name}}</p>
+              <img @click="openPopup(item.rowid)" src="@/assets/img/ShoppingCartDelete.png" alt="" />
             </div>
           </div>
           <div class="content_center_small small1">
-            <p v-if="item.OriginalPrice">$ {{item.OriginalPrice}}</p>
-            <span v-if="item.OriginalPrice">$ {{item.price}}</span>
-            <em v-if="!item.OriginalPrice">$ {{item.price}}</em>
+            <p v-if="item.options.good_price">$ {{ $Thousands(item.options.price) }}</p>
+            <span v-if="item.options.good_price">$ {{ $Thousands(item.options.good_price) }}</span>
+            <em v-if="!item.options.good_price">$ {{ $Thousands(item.options.price) }}</em>
           </div>
           <div class="content_center_small">
             <div class="content_center_small_input">
-              <input type="text" disabled v-model="item.Quantity">
-              <img class="add" @click="numAdd(index)" src="@/assets/img/ShoppingCartAdd.png" alt="" />
-              <img class="less" @click="numLess(index)" src="@/assets/img/ShoppingCartLess.png" alt="" />
+              <input type="text" disabled v-model="item.qty">
+              <img class="add" @click="numUpdate(item.qty, item.rowid, 'add')" src="@/assets/img/ShoppingCartAdd.png" alt="" />
+              <img class="less" @click="numUpdate(item.qty, item.rowid, 'less')" src="@/assets/img/ShoppingCartLess.png" alt="" />
             </div>
           </div>
-          <div class="content_center_small">$ {{item.Subtotal}}</div>
+          <div class="content_center_small">$ {{$Thousands(item.subtotal)}}</div>
         </div>
         <div class="content_bottom">
           <div class="content_bottom_big">
@@ -47,7 +47,7 @@
             <input type="text" :placeholder="$t('ShoppingCart.Optional')" v-model="DiscountCode" />
           </div>
           <div>{{ $t('ShoppingCart.total') }}</div>
-          <div>$ {{TotalPrice}}</div>
+          <div>$ {{$Thousands(TotalPrice)}}</div>
         </div>
       </div>
       <div class="ShoppingCart_box_button">
@@ -73,7 +73,7 @@
           <h3 class="Popup_box_h3">{{ $t('ShoppingCart.Afterdeleting') }}</h3>
           <div class="Popup_box_buttons">
             <button class="Popup_box_buttons_left" @click="popupStatus = false">{{ $t('ShoppingCart.Cancel') }}</button>
-            <button class="Popup_box_buttons_right" @click="deleteProduct()">{{ $t('ShoppingCart.Confirm') }}</button>
+            <button class="Popup_box_buttons_right" @click="deleteProduct()">{{ $t('ShoppingCart.Delete') }}</button>
           </div>
         </div>
       </template>
@@ -87,6 +87,7 @@
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
 import Popup from "@/components/Popup.vue";
+import { POST_GetCart, POST_UpdateCart, POST_RemoveCart, POST_CheckDiscount } from "@/api/api";
 
 export default {
   name: "ShoppingCart",
@@ -102,30 +103,30 @@ export default {
       // 删除商品ID
       deteleId: "",
       dataList: [
-        {
-          imgUrl: require("@/assets/img/ShoppingCart1.png"),
-          title: "波普鑽石",
-          price: "2000",
-          OriginalPrice: "3000",
-          Quantity: 1,
-          Subtotal: "2000"
-        },
-        {
-          imgUrl: require("@/assets/img/ShoppingCart1.png"),
-          title: "波普鑽石波普鑽石波普鑽石波普鑽石",
-          price: "300",
-          OriginalPrice: "1000",
-          Quantity: 3,
-          Subtotal: "900"
-        },
-        {
-          imgUrl: require("@/assets/img/ShoppingCart1.png"),
-          title: "波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石",
-          price: "2000",
-          OriginalPrice: "",
-          Quantity: 1,
-          Subtotal: "2000"
-        }
+        // {
+        //   imgUrl: require("@/assets/img/ShoppingCart1.png"),
+        //   title: "波普鑽石",
+        //   price: "2000",
+        //   OriginalPrice: "3000",
+        //   Quantity: 1,
+        //   Subtotal: "2000"
+        // },
+        // {
+        //   imgUrl: require("@/assets/img/ShoppingCart1.png"),
+        //   title: "波普鑽石波普鑽石波普鑽石波普鑽石",
+        //   price: "300",
+        //   OriginalPrice: "1000",
+        //   Quantity: 3,
+        //   Subtotal: "900"
+        // },
+        // {
+        //   imgUrl: require("@/assets/img/ShoppingCart1.png"),
+        //   title: "波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石波普鑽石",
+        //   price: "2000",
+        //   OriginalPrice: "",
+        //   Quantity: 1,
+        //   Subtotal: "2000"
+        // }
       ],
       // 总价
       TotalPrice: 0,
@@ -133,54 +134,78 @@ export default {
       DiscountCode: ""
     }
   },
-  mounted() {
-    this.dataList.forEach(item => {
-      this.TotalPrice += Number(item.Subtotal)
-    });
+  created() {
+    this._GetCart()
   },
   methods: {
+    _GetCart() {
+      POST_GetCart().then(res => {
+        if (res.code == 200) {
+          this.TotalPrice = res.data.total
+          this.dataList = res.data.cart
+        }
+      })
+    },
     // 继续购物
     toProductZone() {
       this.$router.push("/ProductZone")
     },
-    // 数量增加
-    numAdd(index) {
-      this.dataList[index].Quantity++
-      this.dataList[index].Subtotal = Number(this.dataList[index].price * this.dataList[index].Quantity)
-      this.TotalPrice = 0
-      this.dataList.forEach(item => {
-        this.TotalPrice += Number(item.Subtotal)
-      });
-    },
-    // 数量减少
-    numLess(index) {
-      if (this.dataList[index].Quantity == 1) {
+    // 数量变动
+    numUpdate(qty, rowid, type) {
+      let num = qty
+      if (type == 'add') {
+        num++
+      } else {
+        num--
+      }
+      if (num == 0) {
         return false
       }
-      this.dataList[index].Quantity--
-      this.dataList[index].Subtotal = Number(this.dataList[index].price * this.dataList[index].Quantity)
-      this.TotalPrice = 0
-      this.dataList.forEach(item => {
-        this.TotalPrice += Number(item.Subtotal)
-      });
+      const form = {
+        rowid: rowid,
+        qty: num
+      }
+      POST_UpdateCart(form).then(res => {
+        if (res.code == 200) {
+          this.TotalPrice = res.data.total
+          this.dataList = res.data.cart
+          this.$store.commit("cart/setCartCount", res.data.total_items);
+        }
+      })
     },
     // 打开删除弹窗
-    openPopup(index) {
-      this.deteleId = index
+    openPopup(rowid) {
+      this.deteleId = rowid
       this.popupStatus = true
     },
     // 删除商品
     deleteProduct() {
-      console.log("删除：" + this.deteleId)
-      this.popupStatus = false
+      const form = {
+        rowid: this.deteleId
+      }
+      POST_RemoveCart(form).then(res => {
+        if (res.code == 200) {
+          this.TotalPrice = res.data.total
+          this.dataList = res.data.cart
+          this.$store.commit("cart/setCartCount", res.data.total_items);
+          this.popupStatus = false
+        }
+      })
     },
     // 下一步
     toPaymentMessage() {
       if (this.DiscountCode) {
-        this.$router.push({
-          path: "/PaymentMessage",
-          query: {
-            DiscountCode: this.DiscountCode
+        const form = {
+          activity_text: this.DiscountCode
+        }
+        POST_CheckDiscount(form).then(res => {
+          if (res.code == 200) {
+            this.$router.push({
+              path: "/PaymentMessage",
+              query: {
+                DiscountCode: this.DiscountCode
+              }
+            })
           }
         })
       } else {

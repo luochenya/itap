@@ -13,11 +13,12 @@
         <div class="Login_box_content_input">
           <input v-if="inputStatus" v-model="password" type="text" :placeholder="$t('login.yourpassword')" />
           <input v-if="!inputStatus" v-model="password" type="password" :placeholder="$t('login.yourpassword')" />
-          <img class="Login_box_content_input_img" src="@/assets/img/login1.png" @click="inputStatus = !inputStatus" alt="" />
-          <p class="Login_box_content_input_p" v-if="status">
+          <img v-if="!inputStatus" class="Login_box_content_input_img" src="@/assets/img/login1.png" @click="inputStatus = !inputStatus" alt="" />
+          <img v-if="inputStatus"  class="Login_box_content_input_img" src="@/assets/img/login1Select.png" @click="inputStatus = !inputStatus" alt="" />
+          <!-- <p class="Login_box_content_input_p" v-if="status">
             <img src="@/assets/img/login2.png" alt="" />
             {{ $t('login.Incorrectaccountorpassword') }}
-          </p>
+          </p> -->
         </div>
         <div class="Login_box_content_button">
           <button :class="buttonStatus ? 'active' : ''" @click="SigninClick()">{{ $t('login.Signin') }}</button>
@@ -37,6 +38,7 @@
 <script>
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
+import { POST_Login } from "@/api/api";
 
 export default {
   name: "Login",
@@ -55,21 +57,14 @@ export default {
   },
   watch: {
     mailbox: function() {
-      if (this.mailbox && this.password && !this.status) {
+      if (this.mailbox && this.password) {
         this.buttonStatus = true
       } else {
         this.buttonStatus = false
       }
     },
     password: function() {
-      if (this.mailbox && this.password && !this.status) {
-        this.buttonStatus = true
-      } else {
-        this.buttonStatus = false
-      }
-    },
-    status: function() {
-      if (this.mailbox && this.password && !this.status) {
+      if (this.mailbox && this.password) {
         this.buttonStatus = true
       } else {
         this.buttonStatus = false
@@ -90,7 +85,25 @@ export default {
       if (!this.buttonStatus) {
         return false
       }
-      this.$router.push("/")
+      const form = {
+        username: this.mailbox,
+        password: this.password
+      }
+      POST_Login(form).then(res => {
+        if (res.code == 200) {
+          sessionStorage.setItem("token", res.data.token);
+          sessionStorage.setItem("userInfo", JSON.stringify(res.data.user_info));
+          this.status = false
+          // 判断有无传值，跳转到之前的页面
+          if (this.$route.query.redirect) {
+            this.$router.push(this.$route.query.redirect);
+          } else {
+            this.$router.push("/");
+          }
+        } else if (res.code == 101) {
+          this.status = true
+        }
+      })
     }
   }
 };
@@ -243,6 +256,18 @@ export default {
           font-size: 26px;
           line-height: 30px;
           padding-bottom: 10px;
+        }
+        .Login_box_content_input {
+          input {
+            padding: 0 40px 0 20px;
+            font-size: 14px;
+          }
+          input::placeholder {
+            font-size: 14px;
+          }
+          .Login_box_content_input_img {
+            right: 10px;
+          }
         }
         .Login_box_content_button {
           margin: 60px 0 30px;

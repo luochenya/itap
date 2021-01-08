@@ -2,8 +2,10 @@
   <div class="Home">
     <!-- 顶部导航组件 -->
     <Header />
+    <!-- 顶部banner图 -->
+    <Banner />
     <!-- 顶部BANNER图 -->
-    <div class="Home_banner">
+    <!-- <div class="Home_banner">
       <div class="response">
         <h1>Itap Stardust</h1>
         <h2>自我再創新。</h2>
@@ -14,7 +16,7 @@
         </h3>
         <img src="@/assets/img/home1.png" alt="" />
       </div>
-    </div>
+    </div> -->
     <!-- 轮播图 -->
     <div class="Home_swiper">
       <div class="response">
@@ -71,7 +73,7 @@
           <h6>APPLICATION</h6>
         </div>
         <h2 class="Home_application_h2">
-          有I Tap，沒有什麼能夠阻擋你和我
+          有i Tap，沒有什麼能夠阻擋你和我
         </h2>
       </div>
       <div class="Home_application_img">
@@ -87,6 +89,7 @@
 <script>
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
+import Banner from "@/components/Banner.vue";
 
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
@@ -96,6 +99,7 @@ export default {
   components: {
     Header,
     Bottom,
+    Banner,
     swiper,
     swiperSlide
   },
@@ -122,12 +126,14 @@ export default {
         loop: true,
         autoplay: {
             delay: 3000,//1秒切换一次
+            disableOnInteraction: false, // 切换后自动轮播
         },
         grabCursor: true,
         initialSlide: 1,
         effect: "coverflow",
-        slidesPerView: 'auto',
-        centeredSlides: true,
+        slidesPerView: 'auto', 
+        centeredSlides: true, // 选中slides 居中
+        clickable: true,
         coverflowEffect: {
           rotate: 0,
           stretch: 100,

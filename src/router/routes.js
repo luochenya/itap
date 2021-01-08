@@ -71,7 +71,13 @@ const routes = {
       /* webpackChunkName: "PaymentMessage" */
       "@/views/ShoppingCart/PaymentMessage.vue"
     ),
-    
+  // 付款完成
+  OrderThanks: () =>
+    import(
+      /* webpackChunkName: "OrderThanks" */
+      "@/views/ShoppingCart/OrderThanks.vue"
+    ),
+
   // 資料編輯
   DataEditing: () =>
     import(
@@ -91,6 +97,12 @@ const routes = {
       "@/views/PersonalCenter/OrderManagement.vue"
     ),
 
+  // 访客
+  Access: () =>
+    import(
+      /* webpackChunkName: "Access" */
+      "@/views/Access/Access.vue"
+    ),
   // 404
   404: () =>
     import(

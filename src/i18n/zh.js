@@ -1,4 +1,12 @@
 export default {
+  message: {
+    Thetwopasswordsareinconsistent: "兩次密碼不一致",
+    Joinsuccessfully: "加入成功",
+    Pleaseloginasamember: "請以會員身份登入",
+    Requestfailed: "請求失敗，請重試",
+    uploadedprofile: "上傳頭貼圖片只能是 jpg/bmp/png/jpeg 格式!",
+    Uploadimagesize: "上傳圖片大小不能超過 5MB!",
+  },
   header: {
     Home: "首頁",
     ProductZone: "產品專區",
@@ -12,15 +20,16 @@ export default {
     Suretologout: "確定登出",
     Cancel: "取 消",
     Confirm: "確 定",
+    Language: "繁中"
   },
   bottom: {
     contactus: "聯絡我們",
     Address: "地址：台北市信義區信義路1號100樓",
     Contactnumber: "聯絡電話：02-12345678",
     email: "電子信箱：lmcinternational@gmail.com",
-    Privacypolicyterms: "隱私政策條款",
-    PrivacyandMemberServiceTerms: "隱私權與會員服務條款",
-    ItapAllrightsreserved: "© Itap版權所有"
+    PrivacyPolicy: "隱私政策條款",
+    Membershipterms: "會員服務條款",
+    ItapAllrightsreserved: "© iTap版權所有"
   },
   left: {
     Personalcenter: "個人中心",
@@ -66,7 +75,7 @@ export default {
     Reacquire: "重新獲取",
     Verificationcodeerror: "驗證碼錯誤",
     beensentto: "驗證碼已寄送至",
-    mailboxtoreceiveit: "的信箱，請至信箱收取。"
+    mailboxtoreceiveit: " 的信箱，請至信箱收取。"
   },
   ResetPassword: {
     resetPassword: "重置密碼",
@@ -92,16 +101,18 @@ export default {
     total: "合計",
     Optional: "選填",
     Nextstep: "下一步",
-    confirmdelete: "確定删除",
+    confirmdelete: "確定刪除",
     Afterdeleting: "刪除後，如需此商品，請重新選購",
     Cancel: "取 消",
-    Confirm: "確 定",
+    Delete: "確 定",
     Therearenoproducts: "購物車尚無任何商品",
     Goshopping: "前往購物"
   },
   PaymentMessage: {
     Orderisestablished: "訂單成立",
-    regardedasaninvalidorder: "感謝您的訂購，可至會員中心管理您的訂單 提醒您若選擇轉帳，請記得於期限內完 成付款，逾期將視為無效訂單",
+    Thankyouforyourorder: "感謝您的訂購，",
+    manageyourorder: "可至會員中心管理您的訂單",
+    regardedasaninvalidorder: "提醒您若選擇轉帳，請記得於期限內完成付款，逾期將視為無效訂單",
     Confirm: "確 定",
     Fillinyourpaymentinformation: "填寫您的付款訊息",
     paymentmethod: "付款方式",
@@ -124,7 +135,9 @@ export default {
     Mobilephonebarcode: "手機條碼",
     Formatcharacters: "格式：第1碼「/」加上7碼字元。",
     Formatdigits: "格式：前兩碼為大寫英文，加上14碼數字。",
-    Checkout: "結 帳"
+    Checkout: "結 帳",
+    bank: "銀行",
+    accountnumber: "帳號",
   },
   OrderManagement: {
     Ordermanagement: "訂單管理",
@@ -142,13 +155,14 @@ export default {
     Personalmessage: "個人訊息",
     username: "用戶名",
     aboutme: "關於我",
-    Publicaccount: "公開賬戶",
+    Publicaccount: "公開帳戶",
     public: "公開",
     private: "不公開",
     Aftermakingitpublic: "公開後，他人可透過以下鏈接查閱您的相關資訊",
     Store: "儲 存",
     Datasavedsuccessfully: "資料儲存成功",
-    pleaserefreshthepage: "您的資料已經儲存成功，請重新整理頁面",
+    beensavedsuccessfully: "您的資料已經儲存成功，",
+    pleaserefreshthepage: " 請重新整理頁面",
     Confirm: "確 定",
   },
   ChangePassword: {
@@ -160,7 +174,8 @@ export default {
     Enterthepasswordagain: "再次輸入密碼",
     Change: "變 更",
     Passwordchangedsuccessfully: "密碼變更成功",
-    Yourpasswordhasbeenchangedsuccessfully: "您的密碼已經變更成功，下次登入時請使用新密碼登入",
+    Yourpasswordhasbeenchangedsuccessfully: "您的密碼已經變更成功，",
+    Pleaseloginwith: "下次登入時請使用新密碼登入",
     Confirm: "確 定",
   },
   FAQ: {
@@ -188,6 +203,21 @@ export default {
     Dustlevel: "防塵等級",
     addtoShoppingCart: "加入購物車",
     Recommendforyou: "為您推薦",
-    Backtocommodityarea: "返回商品專區",
+    Backtocommodityarea: "返回產品專區",
+    Popularity: "熱門程度",
+    Addedtime: "上架時間",
+    Productprice: "產品價格",
+    Hightolow: "由高到低",
+    Lowtohigh: "由低到高",
+    Fromnewtoold: "由新到舊",
+    Fromoldtonew: "由舊到新",
+  },
+  Access: {
+    people: "人",
+    Numbervisitors: "造訪人數"
+  },
+  OrderThanks: {
+    purchasingourproducts: "感謝您購買我們的產品",
+    pleasegotothepersonalcenter: "如果您需要查詢訂單詳情，請前往個人中心"
   }
 };

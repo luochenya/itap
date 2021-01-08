@@ -1,5 +1,5 @@
 <template>
-  <div class="Pagination response">
+  <div class="Pagination">
     <el-pagination
       background
       layout="prev, pager, next"

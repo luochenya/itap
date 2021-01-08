@@ -2,8 +2,10 @@
   <div class="Partner">
     <!-- 顶部导航组件 -->
     <Header />
+    <!-- 顶部banner图 -->
+    <Banner />
     <!-- 顶部轮播 -->
-    <div class="Partner_header">
+    <!-- <div class="Partner_header">
       <div class="response">
         <div class="Partner_header_content">
           <div>
@@ -17,14 +19,13 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     
     <!-- 合作伙伴 -->
     <div class="Partner_center response">
       <h1>{{ $t('Partner.Partner') }}</h1>
       <div>
-        <img src="@/assets/img/Partner1.png" alt="" />
-        <img src="@/assets/img/Partner1.png" alt="" />
+        <img v-for="(item, index) in dataList" :key="index" :src="item.pic" :alt="item.name" :title="item.name" :style="item.url ? 'cursor: pointer;' : ''" @click="imgClick(item.url)" />
       </div>
       <h2>
         {{ $t('Partner.Welcometojoinus') }}
@@ -41,12 +42,38 @@
 <script>
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
+import Banner from "@/components/Banner.vue";
+import { POST_GetPartners } from "@/api/api";
 
 export default {
   name: "Partner",
   components: {
     Header,
-    Bottom
+    Bottom,
+    Banner
+  },
+  data() {
+    return {
+      dataList: []
+    }
+  },
+  created() {
+    this._GetPartners()
+  },
+  methods: {
+    _GetPartners() {
+      POST_GetPartners().then(res => {
+        if (res.code == 200) {
+          this.dataList = res.data.partners
+        }
+      })
+    },
+    imgClick(url) {
+      if (!url) {
+        return false
+      }
+      window.open(url)
+    }
   }
 };
 </script>
@@ -117,11 +144,16 @@ export default {
     div {
       padding: 30px 0 60px;
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
       img {
         margin-top: 30px;
-        width: 100%;
+        margin-right: 50px;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+      }
+      img:nth-child(5n + 5) {
+        margin-right: 0;
       }
     }
     h2 {
@@ -139,6 +171,63 @@ export default {
     }
   }
 }
+
+@media only screen and (min-width: 1200px) and (max-width: 1440px) {
+  .Partner {
+    .Partner_center {
+      div {
+        img {
+          margin-right: 73.33px;
+        }
+        img:nth-child(4n + 4) {
+          margin-right: 0;
+        }
+        img:nth-child(5n + 5) {
+          margin-right: 73.33px;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1200px) {
+  .Partner {
+    .Partner_center {
+    padding: 50px 0 60px;
+      div {
+        img {
+          margin-right: 50.66px;
+        }
+        img:nth-child(4n + 4) {
+          margin-right: 0;
+        }
+        img:nth-child(5n + 5) {
+          margin-right: 50.66px;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 992px) {
+  .Partner {
+    .Partner_center {
+    padding: 50px 0 60px;
+      div {
+        img {
+          margin-right: 64px;
+        }
+        img:nth-child(3n + 3) {
+          margin-right: 0;
+        }
+        img:nth-child(5n + 5) {
+          margin-right: 64px;
+        }
+      }
+    }
+  }
+}
+
 @media only screen and (max-width: 768px) {
   .Partner {
     .Partner_header {
@@ -170,6 +259,18 @@ export default {
       }
       div {
         padding: 20px 0 40px;
+        img {
+          width: calc(47vw - 20px);
+          height: calc(47vw - 20px);
+          margin-right: 6vw;
+          margin-top: 6vw;
+        }
+        img:nth-child(2n + 2) {
+          margin-right: 0;
+        }
+        img:nth-child(5n + 5) {
+          margin-right: 6vw;
+        }
       }
       h2 {
         font-size: 18px;

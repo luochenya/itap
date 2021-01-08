@@ -24,11 +24,11 @@
       </div>
       <div class="Bottom_box_right">
         <div>
-          <button>
-            {{ $t('bottom.Privacypolicyterms') }}
+          <button @click="toPrivacyPolicy()">
+            {{ $t('bottom.PrivacyPolicy') }}
           </button>
-          <button>
-            {{ $t('bottom.PrivacyandMemberServiceTerms') }}
+          <button @click="toMembershipterms()">
+            {{ $t('bottom.Membershipterms') }}
           </button>
           <p>
             <img src="@/assets/img/bottom4.png" alt="" />
@@ -46,7 +46,17 @@
 
 <script>
 export default {
-  name: "Bottom"
+  name: "Bottom",
+  methods: {
+    // 隐私条款
+    toPrivacyPolicy() {
+      window.open("https://itap.com.tw/Front/htmlview/7")
+    },
+    // 会员条款
+    toMembershipterms() {
+      window.open("https://itap.com.tw/Front/htmlview/6")
+    }
+  }
 }
 </script>
 
@@ -110,6 +120,9 @@ export default {
       button:hover {
         font-weight: 500;
         color: #C8C8C8;
+        span {
+          color: #007DFF;
+        }
       }
       p {
         margin-top: 27px;

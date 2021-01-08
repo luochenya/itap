@@ -2,6 +2,7 @@
 import axios from "axios";
 import qs from "qs";
 import router from "../router";
+import i18n from "../i18n/vue-i18n";
 import { Message, Loading } from "element-ui";
 
 //定义loading变量
@@ -64,7 +65,6 @@ axios.interceptors.request.use(
     const token = sessionStorage.getItem("token");
     // eslint-disable-next-line no-self-assign
     config.data = config.data;
-    config.headers.post["pc"] = 1;
     if (token) {
       // config.params = { token: token };
       config.headers.post["token"] = token;
@@ -83,20 +83,18 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => {
     // 判断异常未201 202 203为无token，跳转至登录页面
-    if (
-      response.data.code == "201" ||
-      response.data.code == "202" ||
-      response.data.code == "203"
-    ) {
+    if (response.data.code == "201" || response.data.code == "202" || response.data.code == "203") {
       router.push({
         path: "/Login",
         query: { redirect: router.currentRoute.fullPath } //从哪个页面跳转
       });
       Message({
         duration: 1500,
-        message: "Please login as a member",
+        message: i18n.t("message.Pleaseloginasamember"),
         type: "error"
       });
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('userInfo')
     } else if (response.data.code == "200") {
       // Message({
       //   duration: 1500,
@@ -118,7 +116,7 @@ axios.interceptors.response.use(
   error => {
     // 请求失败抛出异常
     Message({
-      message: "Request failed, please try again",
+      message: i18n.t("message.Requestfailed"),
       type: "error"
     });
     // 关闭loading

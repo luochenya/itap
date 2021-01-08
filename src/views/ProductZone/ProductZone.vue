@@ -2,8 +2,10 @@
   <div class="ProductZone">
     <!-- 顶部导航组件 -->
     <Header />
+    <!-- 顶部banner图 -->
+    <Banner />
     <!-- 顶部轮播 -->
-    <div class="ProductZone_header">
+    <!-- <div class="ProductZone_header">
       <div class="response">
         <div class="ProductZone_header_content">
           <div>
@@ -17,29 +19,70 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- 产品专区 -->
     <div class="ProductZone_content">
       <div class="ProductZone_content_response response">
         <h1 class="ProductZone_content_h1">{{ $t('ProductZone.ProductZone') }}</h1>
         <h2 class="ProductZone_content_h2">
-          <button>{{ $t('ProductZone.Sort') }}</button>
-          <button class="active">
-            {{ $t('ProductZone.Popularity') }}
-            <img src="@/assets/img/ProductZone_select.png" alt="" />
+
+
+          <button>
+            {{ $t('ProductZone.Sort') }}
+          </button>
+
+
+          <button>
+            <el-dropdown placement="bottom" class="button2" @command="handleCommand" @visible-change="LanguageSwitchOpen">
+              <span class="el-dropdown-link" :class="LanguageSwitchStatus ? 'active' : ''">
+                {{ sortTitle }}
+                <img src="@/assets/img/ProductZone_select.png" alt="" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <!-- 有token -->
+                <el-dropdown-item command="1">
+                  <p class="ProductZone_content_h2_p">{{ $t('ProductZone.Popularity') }}：{{ $t('ProductZone.Hightolow') }}</p>
+                </el-dropdown-item>
+                <el-dropdown-item command="2">
+                  <p class="ProductZone_content_h2_p">{{ $t('ProductZone.Popularity') }}：{{ $t('ProductZone.Lowtohigh') }}</p>
+                </el-dropdown-item>
+                <el-dropdown-item command="3">
+                  <p class="ProductZone_content_h2_p">{{ $t('ProductZone.Addedtime') }}：{{ $t('ProductZone.Fromnewtoold') }}</p>
+                </el-dropdown-item>
+                <el-dropdown-item command="4">
+                  <p class="ProductZone_content_h2_p">{{ $t('ProductZone.Addedtime') }}：{{ $t('ProductZone.Fromoldtonew') }}</p>
+                </el-dropdown-item>
+                <el-dropdown-item command="5">
+                  <p class="ProductZone_content_h2_p">{{ $t('ProductZone.Productprice') }}：{{ $t('ProductZone.Hightolow') }}</p>
+                </el-dropdown-item>
+                <el-dropdown-item command="6">
+                  <p class="ProductZone_content_h2_p">{{ $t('ProductZone.Productprice') }}：{{ $t('ProductZone.Lowtohigh') }}</p>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </button>
         </h2>
         <div class="ProductZone_content_box">
-          <div class="ProductZone_content_box_div" v-for="(item, index) in dataList" :key="index" @click="toProductDetalis(item)">
+          <div class="ProductZone_content_box_div" v-for="(item, index) in dataList" :key="index">
             <div class="ProductZone_content_box_div_img">
-              <img :src="item.imgUrl" alt="" />
+              <img :src="item.pic[0]" alt="" />
+              <div class="ProductZone_content_box_div_hover">
+                <button @click="toProductDetalis(item)" class="">
+                  <img class="img1" src="@/assets/img/ProductZone_hover1.png" alt="" />
+                  <img class="img2" src="@/assets/img/ProductZone_hover1s.png" alt="" />
+                </button>
+                <button @click="toShoppingCart(item)">
+                  <img class="img1" src="@/assets/img/ProductZone_hover2.png" alt="" />
+                  <img class="img2" src="@/assets/img/ProductZone_hover2s.png" alt="" />
+                </button>
+              </div>
             </div>
             <div class="ProductZone_content_box_div_price">
-              <p>{{ item.title }}</p>
+              <p :title="item.name">{{ item.name }}</p>
               <div>
-                <h4 v-if="!item.price">$ {{ item.OriginalPrice }}</h4>
-                <h5 v-if="item.price">$ {{ item.OriginalPrice }}</h5>
-                <h6 v-if="item.price">$ {{ item.price }}</h6>
+                <h4 v-if="!item.good_price">$ {{ $Thousands(item.price) }}</h4>
+                <h5 v-if="item.good_price">$ {{ $Thousands(item.price) }}</h5>
+                <h6 v-if="item.good_price">$ {{ $Thousands(item.good_price) }}</h6>
               </div>
             </div>
           </div>
@@ -48,7 +91,7 @@
         <Pagination
           :currentPage="offset"
           :pageSize="limit"
-          :total="dataList.length"
+          :total="total"
           :handleCurrentChange="handleCurrentChange"
         />
       </div>
@@ -61,97 +104,101 @@
 <script>
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
+import Banner from "@/components/Banner.vue";
 import Pagination from "@/components/Pagination.vue";
+import { Message } from "element-ui";
+import { POST_GetProductList, POST_AddCart } from "@/api/api";
 
 export default {
   name: "ProductZone",
   components: {
     Header,
     Bottom,
+    Banner,
     Pagination
   },
   data() {
     return {
       offset: 1,
-      limit: 3,
-      dataList: [
-        {
-          imgUrl: require("@/assets/img/ProductZone2.png"),
-          title: "波普鑽石",
-          price: "200",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "200",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone2.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "200"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "200",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone2.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "200"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "200",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone2.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "200"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "300"
-        }
-      ]
+      limit: 12,
+      total: 0,
+      sort: 1,
+      sortTitle: this.$t('ProductZone.Popularity') + '：' + this.$t('ProductZone.Hightolow'),
+      LanguageSwitchStatus: false,
+      dataList: [],
     }
   },
+  created() {
+    this._GetProductList()
+  },
   methods: {
+    _GetProductList() {
+      const form = {
+        page: this.offset,
+        limit: this.limit,
+        sort: this.sort
+      }
+      POST_GetProductList(form).then(res => {
+        if (res.code == 200) {
+          this.dataList = res.data.product_list
+          this.total = res.data.total
+        }
+      })
+    },
+    // 排序下拉框状态
+    LanguageSwitchOpen(flag) {
+      this.LanguageSwitchStatus = flag
+    },
+    // 排序切换
+    handleCommand(command) {
+      this.sort = command
+      if (command == 1) {
+        this.sortTitle = this.$t('ProductZone.Popularity') + '：' + this.$t('ProductZone.Hightolow')
+      } else if (command == 2) {
+        this.sortTitle = this.$t('ProductZone.Popularity') + '：' + this.$t('ProductZone.Lowtohigh')
+      } else if (command == 3) {
+        this.sortTitle = this.$t('ProductZone.Addedtime') + '：' + this.$t('ProductZone.Fromnewtoold')
+      } else if (command == 4) {
+        this.sortTitle = this.$t('ProductZone.Addedtime') + '：' + this.$t('ProductZone.Fromoldtonew')
+      } else if (command == 5) {
+        this.sortTitle = this.$t('ProductZone.Productprice') + '：' + this.$t('ProductZone.Hightolow')
+      } else if (command == 6) {
+        this.sortTitle = this.$t('ProductZone.Productprice') + '：' + this.$t('ProductZone.Lowtohigh')
+      }
+      this._GetProductList()
+    },
     // 分页切换
     handleCurrentChange(val) {
       this.offset = val;
+      this._GetProductList()
     },
     // 跳转到商品详情
     toProductDetalis(item) {
-      this.$router.push("/ProductZoneDetails")
+      this.$router.push({
+        path: "/ProductZoneDetails",
+        query: {
+          data: JSON.stringify(item)
+        }
+      })
+    },
+    // 购买商品
+    toShoppingCart(item) {
+      const form = {
+        pro_id: item.id,
+        qty: 1
+      }
+      POST_AddCart(form).then(res => {
+        if (res.code == 200) {
+          this.$store.commit("cart/setCartCount", res.data.total_items);
+          return Message.success(this.$t("message.Joinsuccessfully"));
+        }
+      })
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .ProductZone {
   width: 100%;
   .ProductZone_header {
@@ -223,7 +270,6 @@ export default {
       display: flex;
       justify-content: flex-end;
       button {
-        margin-left: 40px;
         display: flex;
         align-items: center;
         font-size: 14px;
@@ -236,9 +282,26 @@ export default {
           height: 30px;
         }
       }
-      .active {
-        font-size: 18px;
+      .button2 {
+        margin-left: 40px;
+        font-weight: 400;
+        line-height: 25px;
+        font-size: 16px;
         color: #F2F2F2;
+        span {
+          display: flex;
+          align-items: center;
+          img {
+            margin-left: 5px;
+            width: 30px;
+            height: 30px;
+          }
+        }
+        .active {
+          img {
+            transform: rotate(180deg);
+          }
+        }
       }
     }
     .ProductZone_content_box {
@@ -265,6 +328,25 @@ export default {
             max-width: 100%;
             max-height: 100%;
           }
+          .ProductZone_content_box_div_hover {
+            display: none;
+            button {
+              .img1 {
+                display: block;
+              }
+              .img2 {
+                display: none;
+              }
+            }
+            button:hover {
+              .img1 {
+                display: none;
+              }
+              .img2 {
+                display: block;
+              }
+            }
+          }
         }
         .ProductZone_content_box_div_price {
           padding: 20px;
@@ -276,14 +358,18 @@ export default {
             font-weight: 500;
             color: #F2F2F2;
             line-height: 25px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            word-break: break-all;
           }
           div {
-            padding: 6px 13px;
+            padding: 6px 10px;
             background: #1A1B1D;
             border-radius: 4px;
             display: flex;
             justify-content: space-between;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 500;
             line-height: 24px;
             h4 {
@@ -305,7 +391,25 @@ export default {
       }
       .ProductZone_content_box_div:hover {
         .ProductZone_content_box_div_img {
-          background: #1A1B1D;
+          position: relative;
+          .ProductZone_content_box_div_hover {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba($color: #1A1B1D, $alpha: 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img {
+              margin: 0 12.5px;
+              width: 40px;
+              height: 40px;
+            }
+          }
         }
       }
     }

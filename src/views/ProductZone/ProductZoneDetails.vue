@@ -13,8 +13,9 @@
               <img src="@/assets/img/ProductZoneDetailsLeft.png" alt="" />
             </button>
             <div class="small_img_center" ref="smallImg">
-              <button v-for="(item, index) in imgList" ref="smallImgButton" :key="index" @click="smallImgClick(item)">
+              <button v-for="(item, index) in dataForm.pic" ref="smallImgButton" :class="item == bigImgUrl ? 'active' : ''" :key="index" @click="smallImgClick(item)">
                 <img :src="item" alt="" draggable="false">
+                <div></div>
               </button>
             </div>
             <button class="small_img_right" @click="smallImgRight()">
@@ -23,16 +24,19 @@
           </div>
         </div>
         <div class="ProductZoneDetails_box_top_right">
-          <h1 class="ProductZoneDetails_box_top_right_h1">波普鑽石</h1>
+          <h1 class="ProductZoneDetails_box_top_right_h1">{{ dataForm.name }}</h1>
           <h2 class="ProductZoneDetails_box_top_right_h2">
-            <span>$ 200</span>
-            <em>$ 2,000</em>
-            <!-- <i>$ 2,000</i> -->
+            <span v-if="dataForm.good_price">$ {{ $Thousands(dataForm.good_price) }}</span>
+            <em v-if="dataForm.good_price">$ {{ $Thousands(dataForm.price) }}</em>
+            <i v-if="!dataForm.good_price">$ {{ $Thousands(dataForm.price) }}</i>
           </h2>
           <h3 class="ProductZoneDetails_box_top_right_h3">
             {{ $t('ProductZone.productmanual') }}：
           </h3>
           <h4 class="ProductZoneDetails_box_top_right_h4">
+            <i v-html="dataForm.pro_info"></i>
+          </h4>
+          <!-- <h4 class="ProductZoneDetails_box_top_right_h4">
             <p>{{ $t('ProductZone.Antennafrequency') }}：</p>
             <span>13 .56 MHz</span>
           </h4>
@@ -51,13 +55,13 @@
           <h4 class="ProductZoneDetails_box_top_right_h4">
             <p>{{ $t('ProductZone.Dustlevel') }}：</p>
             <span>取得IP68防塵認證，完全防塵</span>
-          </h4>
+          </h4> -->
           <div class="ProductZoneDetails_box_top_right_input">
             <input type="text" v-model="num" />
             <img class="imgAdd" @click="numAddClick()" src="@/assets/img/ProductZoneDetailsAdd.png" alt="" />
             <img class="imgLess" @click="numLessClick()" src="@/assets/img/ProductZoneDetailsLess.png" alt="" />
           </div>
-          <button class="ProductZoneDetails_box_top_right_button">
+          <button class="ProductZoneDetails_box_top_right_button" @click="addShoppingCart(dataForm.id)">
             <img src="@/assets/img/ProductZoneDetailsCart.png" alt="" />
             {{ $t('ProductZone.addtoShoppingCart') }}
           </button>
@@ -77,14 +81,24 @@
               :key="index"
             >
               <div class="ProductZoneDetails_box_bottom_swiper_content_img">
-                <img :src="item.imgUrl" alt="" />
+                <img :src="item.pic[0]" alt="" />
+                <div class="ProductZoneDetails_box_bottom_swiper_content_img_hover">
+                  <button @click="toProductDetalis(item)">
+                    <img class="img1" src="@/assets/img/ProductZone_hover1.png" alt="" />
+                    <img class="img2" src="@/assets/img/ProductZone_hover1s.png" alt="" />
+                  </button>
+                  <button @click="toShoppingCart(item)">
+                    <img class="img1" src="@/assets/img/ProductZone_hover2.png" alt="" />
+                    <img class="img2" src="@/assets/img/ProductZone_hover2s.png" alt="" />
+                  </button>
+                </div>
               </div>
               <div class="ProductZoneDetails_box_bottom_swiper_content_price">
-                <p>{{ item.title }}</p>
+                <p :title="item.name">{{ item.name }}</p>
                 <div>
-                  <h4 v-if="!item.price">$ {{ item.OriginalPrice }}</h4>
-                  <h5 v-if="item.price">$ {{ item.OriginalPrice }}</h5>
-                  <h6 v-if="item.price">$ {{ item.price }}</h6>
+                  <h4 v-if="!item.good_price">$ {{ $Thousands(item.price) }}</h4>
+                  <h5 v-if="item.good_price">$ {{ $Thousands(item.price) }}</h5>
+                  <h6 v-if="item.good_price">$ {{ $Thousands(item.good_price) }}</h6>
                 </div>
               </div>
             </swiper-slide>
@@ -112,6 +126,8 @@ import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import { Message } from "element-ui";
+import { POST_GetRecommendProductList, POST_AddCart } from "@/api/api";
 
 export default {
   name: "ProductZoneDetails",
@@ -125,41 +141,14 @@ export default {
     return {
       num: 1,
       bigImgStatus: false,
-      bigImgUrl: "",
-      imgList: [
-        require("@/assets/img/ProductZoneDetails1.png"),
-        require("@/assets/img/ProductZoneDetails2.png"),
-        require("@/assets/img/ProductZoneDetails3.png"),
-        require("@/assets/img/ProductZoneDetails1.png"),
-        require("@/assets/img/ProductZoneDetails2.png"),
-        require("@/assets/img/ProductZoneDetails3.png"),
-      ],
-      swiperList: [
-        {
-          imgUrl: require("@/assets/img/ProductZone2.png"),
-          title: "波普鑽石",
-          price: "200",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "200",
-          OriginalPrice: "300"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone2.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "200"
-        },
-        {
-          imgUrl: require("@/assets/img/ProductZone3.png"),
-          title: "波普鑽石",
-          price: "",
-          OriginalPrice: "300"
-        }
-      ],
+      bigImgUrl: JSON.parse(this.$route.query.data).pic[0],
+      dataForm: JSON.parse(this.$route.query.data),
+      // imgList: [
+      //   require("@/assets/img/ProductZoneDetails1.png"),
+      //   require("@/assets/img/ProductZoneDetails2.png"),
+      //   require("@/assets/img/ProductZoneDetails3.png")
+      // ],
+      swiperList: [],
       // 轮播图配置
       swiperOption: {
         // spaceBetween: 40, // 间隔
@@ -175,10 +164,31 @@ export default {
       }
     }
   },
-  mounted() {
-    this.bigImgUrl = this.imgList[0]
+  created() {
+    this._GetRecommendProductList()
   },
   methods: {
+    _GetRecommendProductList() {
+      POST_GetRecommendProductList().then(res => {
+        if (res.code == 200) {
+          this.swiperList = res.data.product_list
+        }
+      })
+    },
+    // 加入购物车
+    addShoppingCart(id) {
+      const form = {
+        pro_id: id,
+        qty: this.num
+      }
+      POST_AddCart(form).then(res => {
+        if (res.code == 200) {
+          this.$store.commit("cart/setCartCount", res.data.total_items);
+          // this.$router.push("/ShoppingCart")
+          return Message.success(this.$t("message.Joinsuccessfully"));
+        }
+      })
+    },
     // 返回商品专页
     toProductZone() {
       this.$router.push("/ProductZone")
@@ -205,6 +215,29 @@ export default {
         return false
       }
       this.num--
+    },
+    // 跳转到商品详情
+    toProductDetalis(item) {
+      this.$router.push({
+        path: "/ProductZoneDetails",
+        query: {
+          data: JSON.stringify(item)
+        }
+      })
+      window.location.reload();
+    },
+    // 购买商品
+    toShoppingCart(item) {
+      const form = {
+        pro_id: item.id,
+        qty: 1
+      }
+      POST_AddCart(form).then(res => {
+        if (res.code == 200) {
+          this.$store.commit("cart/setCartCount", res.data.total_items);
+          return Message.success(this.$t("message.Joinsuccessfully"));
+        }
+      })
     }
   }
 };
@@ -263,16 +296,35 @@ export default {
               display: none;
             }
             button {
+              opacity: 0.8;
               margin-right: 10px;
               width: 120px;
               height: 120px;
+              position: relative;
+              div {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: #1A1B1D;
+                opacity: 0.3;
+              }
               img {
+                position: absolute;
+                left: 0;
+                top: 0;
                 width: 100%;
                 height: 100%;
               }
             }
             button:last-child {
               margin-right: 0;
+            }
+            .active {
+              div {
+                opacity: 0;
+              }
             }
           }
           .small_img_right {
@@ -335,21 +387,25 @@ export default {
           line-height: 25px;
         }
         .ProductZoneDetails_box_top_right_h4 {
-          display: flex;
-          p {
-            width: 165px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #C8C8C8;
-            line-height: 35px;
-          }
-          span {
-            width: calc(100% - 165px);
-            font-size: 16px;
-            line-height: 35px;
-            font-weight: 400;
-            color: #666666;
-          }
+          font-size: 16px;
+          font-weight: 400;
+          color: #666666;
+          line-height: 35px;
+          // display: flex;
+          // p {
+          //   width: 165px;
+          //   font-size: 16px;
+          //   font-weight: 500;
+          //   color: #C8C8C8;
+          //   line-height: 35px;
+          // }
+          // span {
+          //   width: calc(100% - 165px);
+          //   font-size: 16px;
+          //   line-height: 35px;
+          //   font-weight: 400;
+          //   color: #666666;
+          // }
         }
         .ProductZoneDetails_box_top_right_input {
           margin: 36px 0 15px;
@@ -454,6 +510,25 @@ export default {
               max-width: 100%;
               max-height: 100%;
             }
+            .ProductZoneDetails_box_bottom_swiper_content_img_hover {
+              display: none;
+              button {
+                .img1 {
+                  display: block;
+                }
+                .img2 {
+                  display: none;
+                }
+              }
+              button:hover {
+                .img1 {
+                  display: none;
+                }
+                .img2 {
+                  display: block;
+                }
+              }
+            }
           }
           .ProductZoneDetails_box_bottom_swiper_content_price {
             padding: 20px;
@@ -465,14 +540,18 @@ export default {
               font-weight: 500;
               color: #F2F2F2;
               line-height: 25px;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              word-break: break-all;
             }
             div {
-              padding: 6px 13px;
+              padding: 6px 10px;
               background: #1A1B1D;
               border-radius: 4px;
               display: flex;
               justify-content: space-between;
-              font-size: 18px;
+              font-size: 16px;
               font-weight: 500;
               line-height: 24px;
               h4 {
@@ -494,7 +573,25 @@ export default {
         }
         .ProductZoneDetails_box_bottom_swiper_content:hover {
           .ProductZoneDetails_box_bottom_swiper_content_img {
-            background: #1A1B1D;
+          position: relative;
+          .ProductZoneDetails_box_bottom_swiper_content_img_hover {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba($color: #1A1B1D, $alpha: 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img {
+              margin: 0 12.5px;
+              width: 40px;
+              height: 40px;
+            }
+          }
           }
         }
       }
@@ -668,17 +765,17 @@ export default {
             line-height: 20px;
           }
           .ProductZoneDetails_box_top_right_h4 {
-            display: flex;
-            p {
-              width: 145px;
-              font-size: 14px;
-              line-height: 30px;
-            }
-            span {
-              width: calc(100% - 145px);
-              font-size: 14px;
-              line-height: 30px;
-            }
+            // display: flex;
+            // p {
+            //   width: 145px;
+            //   font-size: 14px;
+            //   line-height: 30px;
+            // }
+            // span {
+            //   width: calc(100% - 145px);
+            //   font-size: 14px;
+            //   line-height: 30px;
+            // }
           }
           .ProductZoneDetails_box_top_right_input {
             width: 100%;

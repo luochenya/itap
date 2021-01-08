@@ -77,6 +77,12 @@ const routes = [
     name: "PaymentMessage",
     component: routeMap["PaymentMessage"]
   },
+  // 付款完成
+  {
+    path: "/OrderThanks",
+    name: "OrderThanks",
+    component: routeMap["OrderThanks"]
+  },
   
   // 資料編輯
   {
@@ -95,6 +101,13 @@ const routes = [
     path: "/OrderManagement",
     name: "OrderManagement",
     component: routeMap["OrderManagement"]
+  },
+  
+  // 个人信息
+  {
+    path: "/Access",
+    name: "Access",
+    component: routeMap["Access"]
   },
 
   // 404

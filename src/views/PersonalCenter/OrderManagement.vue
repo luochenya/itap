@@ -13,32 +13,32 @@
               <div class="content_box_div_header">
                 <div class="header_div1">
                   <img src="@/assets/img/icon_time.png" alt="" />
-                  {{item.time}}
+                  {{item.order_time}}
                 </div>
                 <div class="header_div2">
-                  {{ $t('OrderManagement.Ordernumber') }}：{{item.orderNo}}
+                  {{ $t('OrderManagement.Ordernumber') }}：{{item.id}}
                 </div>
                 <div class="header_div3">
                   <div>
                     {{ $t('OrderManagement.total') }}：
-                    <span>$ {{item.TotalPrice}}</span>
+                    <span>$ {{ $Thousands(item.total_amount) }}</span>
                   </div>
                   <img :class="!openStatusList[index] ? 'active' : ''" @click="openListClick(index)" src="@/assets/img/FAQ2.png" alt="" />
                 </div>
               </div>
               <div v-if="openStatusList[index]">
-                <div class="content_box_div_bottom" v-for="(items, indexs) in item.orderList" :key="indexs">
+                <div class="content_box_div_bottom" v-for="(items, indexs) in item.goods_list" :key="indexs">
                   <div class="bottom_div1">
                     <div>
-                      <img :src="items.imgUrl" alt="" />
+                      <img v-if="items.pic" :src="items.pic[0]" alt="" />
                     </div>
-                    <p>{{items.title}}</p>
+                    <p>{{items.name}}</p>
                   </div>
                   <div class="bottom_div2">
-                    x{{items.Quantity}}
+                    x{{items.pro_model_num}}
                   </div>
                   <div class="bottom_div3">
-                    $ {{items.price}}
+                    $ {{ $Thousands(items.subtotal) }}
                   </div>
                 </div>
               </div>
@@ -47,6 +47,15 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="OrderManagement_box_content_Pagination">
+          <!-- 分页 -->
+          <Pagination
+            :currentPage="offset"
+            :pageSize="limit"
+            :total="total"
+            :handleCurrentChange="handleCurrentChange"
+          />
         </div>
       </div>
     </div>
@@ -65,7 +74,6 @@
         </div>
       </template>
     </Popup>
-
 
     <!-- 取消订单成功弹窗 -->
     <Popup v-if="successPopupStatus">
@@ -90,6 +98,8 @@ import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
 import Left from "@/components/Left.vue";
 import Popup from "@/components/Popup.vue";
+import Pagination from "@/components/Pagination.vue";
+import { POST_MyOrder, POST_CancelOrder } from "@/api/api";
 
 export default {
   name: "OrderManagement",
@@ -97,74 +107,47 @@ export default {
     Header,
     Bottom,
     Left,
-    Popup
+    Popup,
+    Pagination
   },
   data() {
     return {
+      offset: 1,
+      limit: 10,
+      total: 0,
       confirmPopupStatus: false,
       successPopupStatus: false,
       openStatusList: [],
-      dataList: [
-        {
-          time: "2020-11-20",
-          orderNo: "A10101000222",
-          TotalPrice: 6000,
-          orderList: [
-            {
-              imgUrl: require('@/assets/img/ProductZoneDetails1.png'),
-              title: "波普鑽石",
-              Quantity: 1,
-              price: 2000
-            },
-            {
-              imgUrl: require('@/assets/img/ProductZoneDetails1.png'),
-              title: "波普鑽石",
-              Quantity: 1,
-              price: 4000
-            }
-          ]
-        },
-        {
-          time: "2020-11-24",
-          orderNo: "A10101000333",
-          TotalPrice: 10000,
-          orderList: [
-            {
-              imgUrl: require('@/assets/img/ProductZoneDetails1.png'),
-              title: "波普鑽石",
-              Quantity: 3,
-              price: 2000
-            },
-            {
-              imgUrl: require('@/assets/img/ProductZoneDetails1.png'),
-              title: "波普鑽石",
-              Quantity: 1,
-              price: 4000
-            }
-          ]
-        },
-        {
-          time: "2020-12-12",
-          orderNo: "A10101000444",
-          TotalPrice: 6000,
-          orderList: [
-            {
-              imgUrl: require('@/assets/img/ProductZoneDetails1.png'),
-              title: "波普鑽石",
-              Quantity: 3,
-              price: 2000
-            }
-          ]
-        },
-      ]
+      dataList: [],
+      orderId: "",
     }
   },
-  mounted() {
-    this.dataList.forEach((item, index) => {
-      this.openStatusList.splice(index, 0, false)
-    })
+  created() {
+    this._MyOrder()
   },
   methods: {
+    // 分页切换
+    handleCurrentChange(val) {
+      this.offset = val;
+      this._MyOrder()
+    },
+    // 获取订单管理列表
+    _MyOrder() {
+      const form = {
+        page: this.offset,
+        limit: this.limit
+      }
+      POST_MyOrder(form).then(res => {
+        if (res.code == 200) {
+          this.total = res.data.total
+          this.dataList = res.data.order_list
+          this.openStatusList = []
+          this.dataList.forEach((item, index) => {
+            this.openStatusList.splice(index, 0, false)
+          })
+        }
+      })
+    },
     // 打开列表
     openListClick(index) {
       this.openStatusList.splice(index, 1, !this.openStatusList[index])
@@ -172,15 +155,24 @@ export default {
     // 取消订单
     cancelOrder(item) {
       this.confirmPopupStatus = true
+      this.orderId = item.id
     },
     // 确认取消订单弹窗确定
     confirmCancel() {
       this.confirmPopupStatus = false
-      this.successPopupStatus = true
+      const form = {
+        order_id: this.orderId
+      }
+      POST_CancelOrder(form).then(res => {
+        if (res.code == 200) {
+          this.successPopupStatus = true
+        }
+      })
     },
     // 成功弹窗关闭
     successPopupClose() {
       this.successPopupStatus = false
+      this._MyOrder()
     }
   }
 };
@@ -207,7 +199,7 @@ export default {
         border-bottom: 1px solid #353535;
       }
       .OrderManagement_box_content_div {
-        height: calc(100% - 77px);
+        height: calc(100% - 147px);
         position: relative;
         overflow: hidden;
         .content_box {
@@ -232,7 +224,7 @@ export default {
               display: flex;
               align-items: center;
               .header_div1 {
-                width: 30%;
+                width: 40%;
                 display: flex;
                 align-items: center;
                 font-size: 16px;
@@ -246,7 +238,7 @@ export default {
                 }
               }
               .header_div2 {
-                width: 30%;
+                width: 20%;
                 text-align: right;
                 font-size: 16px;
                 font-weight: 400;
@@ -287,7 +279,7 @@ export default {
               background: #1A1B1D;
               display: flex;
               .bottom_div1 {
-                width: 30%;
+                width: 40%;
                 display: flex;
                 div {
                   margin-right: 10px;
@@ -314,7 +306,7 @@ export default {
                 }
               }
               .bottom_div2 {
-                width: 30%;
+                width: 20%;
                 text-align: right;
                 font-size: 18px;
                 font-weight: 400;
@@ -347,6 +339,14 @@ export default {
             }
           }
         }
+      }
+      .OrderManagement_box_content_Pagination {
+        border-top: 1px solid #353535;
+        width: 100%;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }

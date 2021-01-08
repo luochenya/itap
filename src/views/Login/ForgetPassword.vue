@@ -27,6 +27,7 @@
 <script>
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
+import { POST_ToEmailForget } from "@/api/api";
 
 export default {
   name: "ForgetPassword",
@@ -59,10 +60,17 @@ export default {
       if (!this.buttonStatus) {
         return false
       }
-      this.$router.push({
-        path: "/VerificationCode",
-        query: {
-          mailbox: this.mailbox
+      const form = {
+        email: this.mailbox
+      }
+      POST_ToEmailForget(form).then(res => {
+        if (res.code == 200) {
+          this.$router.push({
+            path: "/VerificationCode",
+            query: {
+              mailbox: this.mailbox
+            }
+          })
         }
       })
     }

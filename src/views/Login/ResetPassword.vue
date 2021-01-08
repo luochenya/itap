@@ -10,12 +10,14 @@
         <div class="ResetPassword_box_content_input">
           <input v-if="passwordStatus" v-model="password" :placeholder="$t('ResetPassword.Pleaseenterpassword')" type="text" />
           <input v-if="!passwordStatus" v-model="password" :placeholder="$t('ResetPassword.Pleaseenterpassword')" type="password" />
-          <img class="ResetPassword_box_content_input_img" src="@/assets/img/login1.png" @click="passwordStatus = !passwordStatus" alt="" />
+          <img v-if="!passwordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1.png" @click="passwordStatus = !passwordStatus" alt="" />
+          <img v-if="passwordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1Select.png" @click="passwordStatus = !passwordStatus" alt="" />
         </div>
         <div class="ResetPassword_box_content_input">
           <input v-if="confirmPasswordStatus" v-model="confirmPassword" :placeholder="$t('ResetPassword.Enterthepasswordagain')" type="text" />
           <input v-if="!confirmPasswordStatus" v-model="confirmPassword" :placeholder="$t('ResetPassword.Enterthepasswordagain')" type="password" />
-          <img class="ResetPassword_box_content_input_img" src="@/assets/img/login1.png" @click="confirmPasswordStatus = !confirmPasswordStatus" alt="" />
+          <img v-if="!confirmPasswordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1.png" @click="confirmPasswordStatus = !confirmPasswordStatus" alt="" />
+          <img v-if="confirmPasswordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1Select.png" @click="confirmPasswordStatus = !confirmPasswordStatus" alt="" />
         </div>
         <div class="ResetPassword_box_content_button">
           <button :class="buttonStatus ? 'active' : ''" @click="Submit()">{{ $t('ResetPassword.Reset') }}</button>
@@ -50,6 +52,8 @@
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
 import Popup from "@/components/Popup.vue";
+import { Message } from "element-ui";
+import { POST_SetPassword } from "@/api/api";
 
 export default {
   name: "ResetPassword",
@@ -94,7 +98,20 @@ export default {
       if (!this.buttonStatus) {
         return false
       }
-      this.popupStatus = true
+      if (this.password != this.confirmPassword) {
+        return Message.error(this.$t("message.Thetwopasswordsareinconsistent"));
+      }
+      const form = {
+        email: this.$route.query.mailbox,
+        code: this.$route.query.code,
+        password: this.password,
+        code_token: this.$route.query.code_token
+      }
+      POST_SetPassword(form).then(res => {
+        if (res.code == 200) {
+          this.popupStatus = true
+        }
+      })
     }
   }
 };

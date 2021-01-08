@@ -13,18 +13,25 @@
             {{ $t('PaymentMessage.paymentmethod') }}
           </p>
           <div class="PaymentMessage_box_content_div_checkout">
-            <div @click="paymentMethodClick(0)">
-              <img v-if="paymentMethod == 0" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
-              <img v-if="paymentMethod != 0" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
-              <p :class="paymentMethod == 0 ? 'p_active' : ''">{{ $t('PaymentMessage.creditcard') }}</p>
-            </div>
             <div @click="paymentMethodClick(1)">
               <img v-if="paymentMethod == 1" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
               <img v-if="paymentMethod != 1" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
-              <p :class="paymentMethod == 1 ? 'p_active' : ''">{{ $t('PaymentMessage.Transfer') }}</p>
+              <p :class="paymentMethod == 1 ? 'p_active' : ''">{{ $t('PaymentMessage.creditcard') }}</p>
+            </div>
+            <div @click="paymentMethodClick(2)">
+              <img v-if="paymentMethod == 2" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
+              <img v-if="paymentMethod != 2" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
+              <p :class="paymentMethod == 2 ? 'p_active' : ''">{{ $t('PaymentMessage.Transfer') }}</p>
             </div>
           </div>
         </div>
+        <!-- 付款信息 -->
+        <p class="PaymentMessage_box_content_p" v-if="paymentMethod == 2">
+          {{ $t('PaymentMessage.bank') }}：xxxxx{{ $t('PaymentMessage.bank') }}
+        </p>
+        <p class="PaymentMessage_box_content_p" v-if="paymentMethod == 2">
+          {{ $t('PaymentMessage.accountnumber') }}：xxxxx
+        </p>
         <!-- 聯絡電話 -->
         <div class="PaymentMessage_box_content_div">
           <p class="PaymentMessage_box_content_div_p">{{ $t('PaymentMessage.Contactnumber') }}</p>
@@ -36,20 +43,20 @@
         <div class="PaymentMessage_box_content_div">
           <p class="PaymentMessage_box_content_div_p">{{ $t('PaymentMessage.invoicetype') }}</p>
           <div class="PaymentMessage_box_content_div_checkout">
-            <div @click="invoiceTypeClick(0)">
-              <img v-if="invoiceType == 0" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
-              <img v-if="invoiceType != 0" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
-              <p :class="invoiceType == 0 ? 'p_active' : ''">{{ $t('PaymentMessage.Electronicinvoice') }}</p>
+            <div @click="invoiceTypeClick(2)">
+              <img v-if="invoiceType == 2" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
+              <img v-if="invoiceType != 2" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
+              <p :class="invoiceType == 2 ? 'p_active' : ''">{{ $t('PaymentMessage.Electronicinvoice') }}</p>
             </div>
             <div @click="invoiceTypeClick(1)">
               <img v-if="invoiceType == 1" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
               <img v-if="invoiceType != 1" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
               <p :class="invoiceType == 1 ? 'p_active' : ''">{{ $t('PaymentMessage.Tripleinvoice') }}</p>
             </div>
-            <div @click="invoiceTypeClick(2)">
-              <img v-if="invoiceType == 2" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
-              <img v-if="invoiceType != 2" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
-              <p :class="invoiceType == 2 ? 'p_active' : ''">{{ $t('PaymentMessage.Donationinvoice') }}</p>
+            <div @click="invoiceTypeClick(3)">
+              <img v-if="invoiceType == 3" src="@/assets/img/PaymentMessageCheckout.png" alt="" />
+              <img v-if="invoiceType != 3" src="@/assets/img/PaymentMessageNotCheckout.png" alt="" />
+              <p :class="invoiceType == 3 ? 'p_active' : ''">{{ $t('PaymentMessage.Donationinvoice') }}</p>
             </div>
           </div>
           <!-- 公司名稱 -->
@@ -64,30 +71,30 @@
           </div>
           <!-- 愛心代碼 -->
           <!-- 發票類型 == 捐贈發票 -->
-          <div class="PaymentMessage_box_content_div_input inputTop" v-if="invoiceType == 2">
+          <div class="PaymentMessage_box_content_div_input inputTop" v-if="invoiceType == 3">
             <input type="text" :placeholder="$t('PaymentMessage.Pleaseenterthelovecode')" v-model="LoveCode" />
           </div>
         </div>
         <!-- 載具類型 -->
         <!-- 發票類型 == 電子發票 -->
-        <div class="PaymentMessage_box_content_div" v-if="invoiceType == 0">
+        <div class="PaymentMessage_box_content_div" v-if="invoiceType == 2">
           <p class="PaymentMessage_box_content_div_p">{{ $t('PaymentMessage.Vehicletype') }}</p>
           <div class="PaymentMessage_box_content_div_select">
             <select v-model="VehicleType">
-              <option value="0">{{ $t('PaymentMessage.Membervehicle') }}</option>
-              <option value="1">{{ $t('PaymentMessage.Mobilevehicle') }}</option>
-              <option value="2">{{ $t('PaymentMessage.Naturalpersoncertificate') }}</option>
+              <option value="1">{{ $t('PaymentMessage.Membervehicle') }}</option>
+              <option value="2">{{ $t('PaymentMessage.Mobilevehicle') }}</option>
+              <option value="3">{{ $t('PaymentMessage.Naturalpersoncertificate') }}</option>
             </select>
           </div>
         </div>
         <!-- 会员载具提示文字 -->
         <!-- 發票類型 == 電子發票 && 載具類型 == 會員載具 -->
-        <h2 class="PaymentMessage_box_content_h2" v-if="invoiceType == 0 && VehicleType == 0">
+        <h2 class="PaymentMessage_box_content_h2" v-if="invoiceType == 2 && VehicleType == 1">
           {{ $t('PaymentMessage.winnertohandletheprizecollection') }}
         </h2>
         <!-- 手機條碼 -->
         <!-- 發票類型 == 電子發票 && 載具類型 == 手機載具 -->
-        <div class="PaymentMessage_box_content_div" v-if="invoiceType == 0 && VehicleType == 1">
+        <div class="PaymentMessage_box_content_div" v-if="invoiceType == 2 && VehicleType == 2">
           <p class="PaymentMessage_box_content_div_p">{{ $t('PaymentMessage.Mobilephonebarcode') }}</p>
           <div class="PaymentMessage_box_content_div_input">
             <input type="text" placeholder="//AB201C9" v-model="MobilePhoneBarcode" />
@@ -96,10 +103,10 @@
         </div>
         <!-- 手機條碼 -->
         <!-- 發票類型 == 電子發票 && 載具類型 == 自然人憑證 -->
-        <div class="PaymentMessage_box_content_div" v-if="invoiceType == 0 && VehicleType == 2">
+        <div class="PaymentMessage_box_content_div" v-if="invoiceType == 2 && VehicleType == 3">
           <p class="PaymentMessage_box_content_div_p">{{ $t('PaymentMessage.Mobilephonebarcode') }}</p>
           <div class="PaymentMessage_box_content_div_input">
-            <input type="text" placeholder="TP03000001234567" v-model="MobilePhoneBarcodes" />
+            <input type="text" placeholder="TP03000001234567" v-model="MobilePhoneBarcode" />
             <span>{{ $t('PaymentMessage.Formatdigits') }}</span>
           </div>
         </div>
@@ -116,6 +123,8 @@
         <div class="Popup_box">
           <img class="Popup_box_img" src="@/assets/img/Popup1.png" alt="" />
           <h2 class="Popup_box_h2">{{ $t('PaymentMessage.Orderisestablished') }}</h2>
+          <h3 class="Popup_box_h3">{{ $t('PaymentMessage.Thankyouforyourorder') }}</h3>
+          <h3 class="Popup_box_h3">{{ $t('PaymentMessage.manageyourorder') }}</h3>
           <h3 class="Popup_box_h3">{{ $t('PaymentMessage.regardedasaninvalidorder') }}</h3>
           <div class="Popup_box_button">
             <button @click="popupDetermine()">{{ $t('PaymentMessage.Confirm') }}</button>
@@ -133,6 +142,7 @@
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
 import Popup from "@/components/Popup.vue";
+import { POST_AddOrder } from "@/api/api";
 
 export default {
   name: "PaymentMessage",
@@ -146,11 +156,11 @@ export default {
       // 弹窗状态
       popupStatus: false,
       // 付款方式
-      paymentMethod: 0,
+      paymentMethod: 1,
       // 联络电话
       ContactNumber: "",
       // 发票类型
-      invoiceType: 0,
+      invoiceType: 2,
       // 公司名稱/三聯式發票
       companyName: "",
       // 公司統一編號/三聯式發票
@@ -158,11 +168,13 @@ export default {
       // 愛心代碼/捐贈發票
       LoveCode: "",
       // 载具类型
-      VehicleType: 0,
+      VehicleType: 1,
       // 手机条码/手機載具
       MobilePhoneBarcode: "",
       // 手机条码/自然人憑證
       MobilePhoneBarcodes: "",
+      // 订单ID
+      order_id: ""
     }
   },
   watch: {
@@ -175,18 +187,18 @@ export default {
       // 清空愛心代碼
       this.LoveCode = "";
       // 默认载具类型
-      this.VehicleType = 0;
+      this.VehicleType = 1;
       // 清空手机条码
       this.MobilePhoneBarcode = "";
-      // 清空手机条码
-      this.MobilePhoneBarcodes = "";
+      // // 清空手机条码
+      // this.MobilePhoneBarcodes = "";
     },
     // 载具类型切换监听
     VehicleType() {
       // 清空手机条码
       this.MobilePhoneBarcode = "";
-      // 清空手机条码
-      this.MobilePhoneBarcodes = "";
+      // // 清空手机条码
+      // this.MobilePhoneBarcodes = "";
     }
   },
   methods: {
@@ -200,10 +212,31 @@ export default {
     },
     // 结账
     BillClick() {
-      this.popupStatus = true
+      const form = {
+        user_phone: this.ContactNumber,
+        activity_text: this.$route.query.DiscountCode,
+        invoice_mode: this.invoiceType,
+        invoice_1_rise: this.companyName,
+        invoice_1_unite: this.companyNumber,
+        invoice_2_vehicle: this.VehicleType,
+        invoice_2_vehicle_number: this.MobilePhoneBarcode,
+        invoice_3_love_code: this.LoveCode,
+        pay_mode: this.paymentMethod,
+      }
+      POST_AddOrder(form).then(res => {
+        if (res.code == 200) {
+          this.order_id = res.data.order_id
+          this.popupStatus = true
+        }
+      })
     },
     // 弹窗确定
     popupDetermine() {
+      if (this.paymentMethod == 2) {
+        this.$router.push("/OrderThanks")
+      } else {
+        window.location.href = this.$priceUrl + "web/Member/lj_pay?order_id=" + this.order_id;
+      }
       this.popupStatus = false
     }
   }
@@ -225,6 +258,14 @@ export default {
         font-weight: 400;
         color: #F2F2F2;
         line-height: 48px;
+      }
+      .PaymentMessage_box_content_p {
+        margin-top: 10px;
+        padding-left: 10px;
+        font-size: 16px;
+        font-weight: 400;
+        color: #666666;
+        line-height: 22px;
       }
       .PaymentMessage_box_content_div {
         margin-top: 35px;

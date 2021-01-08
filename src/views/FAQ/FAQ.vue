@@ -2,8 +2,10 @@
   <div class="FAQ">
     <!-- 顶部导航组件 -->
     <Header />
+    <!-- 顶部banner图 -->
+    <Banner />
     <!-- 顶部轮播 -->
-    <div class="FAQ_header">
+    <!-- <div class="FAQ_header">
       <div class="response">
         <div class="FAQ_header_content">
           <div>
@@ -17,7 +19,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- 内容 -->
     <div class="FAQ_content response">
       <h1 class="FAQ_content_h1">{{ $t('FAQ.Videohelp') }}</h1>
@@ -41,22 +43,30 @@
         <div class="FAQ_content_box_left">
           <h1>{{ $t('FAQ.Troubleshoot') }}</h1>
           <h2>{{ $t('FAQ.Solveproblemseveryday') }}</h2>
-          <button :class="buttonActive == 0 ? 'active' : ''" @click="buttonClick(0)">{{ $t('FAQ.Register') }}</button>
-          <button :class="buttonActive == 1 ? 'active' : ''" @click="buttonClick(1)">{{ $t('FAQ.Shopping') }}</button>
-          <button :class="buttonActive == 2 ? 'active' : ''" @click="buttonClick(2)">{{ $t('FAQ.Member') }}</button>
+          <div class="scroll">
+            <div class="scrolls">
+              <button
+                v-for="(item, index) in faqsTypeList" :key="index"
+                :class="buttonActive == index ? 'active' : ''"
+                @click="buttonClick(index)"
+              >
+                {{ item.name }}
+              </button>
+            </div>
+          </div>
         </div>
         <div class="FAQ_content_box_right">
           <div class="scroll">
-            <div class="box" v-for="(item, index) in FAQList" :key="index">
+            <div class="box" v-for="(item, index) in faqsList" :key="index">
               <div class="box_title">
                 <div class="box_title_left">
                   <img src="@/assets/img/FAQ1.png" alt="" />
-                  <p>{{item.title}}</p>
+                  <p>{{item.question}}</p>
                 </div>
-                <img class="box_title_right" :class="!FAQStatusList[index] ? 'active' : ''" @click="FAQClick(index)" src="@/assets/img/FAQ2.png" alt="" />
+                <img class="box_title_right" :class="!faqsStatusList[index] ? 'active' : ''" @click="FAQClick(index)" src="@/assets/img/FAQ2.png" alt="" />
               </div>
-              <div class="box_content" v-if="FAQStatusList[index]">
-                {{item.content}}
+              <div class="box_content" v-if="faqsStatusList[index]">
+                <div v-html="item.answer"></div>
               </div>
             </div>
           </div>
@@ -71,35 +81,27 @@
 <script>
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
+import Banner from "@/components/Banner.vue";
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import { POST_GetFqas } from "@/api/api";
 
 export default {
   name: "FAQ",
   components: {
     Header,
     Bottom,
+    Banner,
     swiper,
     swiperSlide
   },
   data() {
     return {
+      faqsTypeList: [],
+      faqsList: [],
+      faqsLists: [],
+      faqsStatusList: [],
       buttonActive: 0,
-      FAQList: [
-        {
-          title: "用戶註冊需要錢錢嗎？",
-          content: "不用喔，且註冊成為會員後，將能更便利的管理帳戶"
-        },
-        {
-          title: "註冊要錢嗎？",
-          content: "不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶不用喔，且註冊成為會員後，將能更便利的管理帳戶"
-        },
-        {
-          title: "用戶註冊需要錢錢嗎？",
-          content: "不用喔，且註冊成為會員後，將能更便利的管理帳戶"
-        }
-      ],
-      FAQStatusList: [],
       swiperList: [
         {
           imgUrl: require("@/assets/img/FAQSwiper.png")
@@ -117,7 +119,7 @@ export default {
       // 轮播图配置
       swiperOption: {
         // spaceBetween: 40, // 间隔
-        grabCursor: true,
+        grabCursor: true, // 鼠标手势
         slidesPerView: "auto",
         navigation: {
           nextEl: ".swiper-button-next",
@@ -126,17 +128,37 @@ export default {
       },
     }
   },
-  mounted() {
-    this.FAQList.forEach((item, index) => {
-      this.FAQStatusList.splice(index, 0, false)
-    })
+  created() {
+    this._GetFaqs()
   },
   methods: {
+    _GetFaqs() {
+      POST_GetFqas().then(res => {
+        if (res.code == 200) {
+          this.faqsTypeList = res.data.itap_faqs_type
+          this.faqsLists = res.data.faqs
+          this.faqsLists.forEach((item, index) => {
+            if (this.faqsTypeList[0].id == item.faqs_type_id) {
+              this.faqsList.push(item)
+              this.faqsStatusList.splice(index, 0, false)
+            }
+          })
+        }
+      })
+    },
     buttonClick(num) {
       this.buttonActive = num
+      this.faqsList = []
+      this.faqsStatusList = []
+      this.faqsLists.forEach((item, index) => {
+        if (this.faqsTypeList[this.buttonActive].id == item.faqs_type_id) {
+          this.faqsList.push(item)
+          this.faqsStatusList.splice(index, 0, false)
+        }
+      })
     },
     FAQClick(index) {
-      this.FAQStatusList.splice(index, 1, !this.FAQStatusList[index])
+      this.faqsStatusList.splice(index, 1, !this.faqsStatusList[index])
     }
   }
 };
@@ -223,6 +245,7 @@ export default {
             height: 100%;
           }
           .img2 {
+            cursor: pointer;
             position: absolute;
             left: 50%;
             top: 50%;
@@ -284,20 +307,34 @@ export default {
           color: #9B9B9B;
           line-height: 14px;
         }
-        button {
-          margin-top: 40px;
-          width: 100%;
-          height: 50px;
-          font-size: 18px;
-          font-weight: 500;
-          line-height: 25px;
-          color: #666666;
-        }
-        .active {
-          color: #F2F2F2;
-          background: #00AD69;
-          box-shadow: 0px 10px 10px 0px #0C0D0D;
-          border-radius: 4px;
+        .scroll {
+          position: relative;
+          overflow: hidden;
+          height: calc(100% - 65px);
+          .scrolls {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: -17px;
+            bottom: 0;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            button {
+              margin-top: 40px;
+              width: 100%;
+              height: 50px;
+              font-size: 18px;
+              font-weight: 500;
+              line-height: 25px;
+              color: #666666;
+            }
+            .active {
+              color: #F2F2F2;
+              background: #00AD69;
+              box-shadow: 0px 10px 10px 0px #0C0D0D;
+              border-radius: 4px;
+            }
+          }
         }
       }
       .FAQ_content_box_right {
@@ -492,8 +529,13 @@ export default {
         height: auto;
         .FAQ_content_box_left {
           width: 100%;
-          button {
-            margin-top: 20px;
+          .scroll {
+            height: 300px;
+            .scrolls {
+              button {
+                margin-top: 20px;
+              }
+            }
           }
         }
         .FAQ_content_box_right {

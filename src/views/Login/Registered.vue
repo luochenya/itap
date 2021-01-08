@@ -49,6 +49,7 @@
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
 import Popup from "@/components/Popup.vue";
+import { POST_Regedit } from "@/api/api";
 
 export default {
   name: "Registered",
@@ -95,7 +96,16 @@ export default {
       if (!this.buttonStatus) {
         return false
       }
-      this.popupStatus = true
+      const form = {
+        nick_name: this.userName,
+        email: this.mailbox,
+        password: this.password
+      }
+      POST_Regedit(form).then(res => {
+        if (res.code == 200) {
+          this.popupStatus = true
+        }
+      })
     }
   }
 };

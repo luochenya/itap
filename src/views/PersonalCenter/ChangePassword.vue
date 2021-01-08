@@ -13,17 +13,20 @@
           <div class="ChangePassword_box_content_div_input">
             <input :placeholder="$t('ChangePassword.oldpassword')" v-model="password" v-if="passwordStatus" type="text" />
             <input :placeholder="$t('ChangePassword.oldpassword')" v-model="password" v-if="!passwordStatus" type="password" />
-            <img @click="passwordStatus = !passwordStatus" src="@/assets/img/login1.png" alt="" />
+            <img v-if="!passwordStatus" @click="passwordStatus = !passwordStatus" src="@/assets/img/login1.png" alt="" />
+            <img v-if="passwordStatus" @click="passwordStatus = !passwordStatus" src="@/assets/img/login1Select.png" alt="" />
           </div>
           <div class="ChangePassword_box_content_div_input">
             <input :placeholder="$t('ChangePassword.newpassword')" v-model="newPassword" v-if="newPasswordStatus" type="text" />
             <input :placeholder="$t('ChangePassword.newpassword')" v-model="newPassword" v-if="!newPasswordStatus" type="password" />
-            <img @click="newPasswordStatus = !newPasswordStatus" src="@/assets/img/login1.png" alt="" />
+            <img v-if="!newPasswordStatus" @click="newPasswordStatus = !newPasswordStatus" src="@/assets/img/login1.png" alt="" />
+            <img v-if="newPasswordStatus" @click="newPasswordStatus = !newPasswordStatus" src="@/assets/img/login1Select.png" alt="" />
           </div>
           <div class="ChangePassword_box_content_div_input">
             <input :placeholder="$t('ChangePassword.Enterthepasswordagain')" v-model="confirmPassword" v-if="confirmPasswordStatus" type="text" />
             <input :placeholder="$t('ChangePassword.Enterthepasswordagain')" v-model="confirmPassword" v-if="!confirmPasswordStatus" type="password" />
-            <img @click="confirmPasswordStatus = !confirmPasswordStatus" src="@/assets/img/login1.png" alt="" />
+            <img v-if="!confirmPasswordStatus" @click="confirmPasswordStatus = !confirmPasswordStatus" src="@/assets/img/login1.png" alt="" />
+            <img v-if="confirmPasswordStatus" @click="confirmPasswordStatus = !confirmPasswordStatus" src="@/assets/img/login1Select.png" alt="" />
           </div>
           <div class="ChangePassword_box_content_div_button">
             <button :class="buttonStatus ? 'active' : ''" @click="changePassword()">{{ $t('ChangePassword.Change') }}</button>
@@ -39,6 +42,7 @@
           <img class="Popup_box_img" src="@/assets/img/Popup1.png" alt="" />
           <h2 class="Popup_box_h2">{{ $t('ChangePassword.Passwordchangedsuccessfully') }}</h2>
           <h3 class="Popup_box_h3">{{ $t('ChangePassword.Yourpasswordhasbeenchangedsuccessfully') }}</h3>
+          <h3 class="Popup_box_h3">{{ $t('ChangePassword.Pleaseloginwith') }}</h3>
           <div class="Popup_box_button">
             <button @click="popupClose()">{{ $t('ChangePassword.Confirm') }}</button>
           </div>
@@ -55,6 +59,8 @@ import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
 import Left from "@/components/Left.vue";
 import Popup from "@/components/Popup.vue";
+import { Message } from "element-ui";
+import { POST_UpdatePassword } from "@/api/api";
 
 export default {
   name: "ChangePassword",
@@ -104,12 +110,24 @@ export default {
     changePassword() {
       if (!this.buttonStatus) {
         return false
+      } 
+      if (this.newPassword != this.confirmPassword) {
+        return Message.error(this.$t("message.Thetwopasswordsareinconsistent"));
       }
-      this.popupStatus = true
+      const form = {
+        password: this.password,
+        new_password: this.newPassword
+      }
+      POST_UpdatePassword(form).then(res => {
+        if (res.code == 200) {
+          this.popupStatus = true
+        }
+      })
     },
     // 变更密码成功弹窗关闭
     popupClose() {
       this.popupStatus = false
+      window.location.reload();
     }
   }
 };

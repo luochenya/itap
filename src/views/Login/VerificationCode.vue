@@ -15,7 +15,7 @@
             {{ $t('ForgetPassword.Verificationcodeerror') }}
           </p>
           <div v-if="codeStatus">
-            {{ $t('ForgetPassword.beensentto') }} {{this.$route.query.mailbox}} {{ $t('ForgetPassword.mailboxtoreceiveit') }}
+            {{ $t('ForgetPassword.beensentto') }} {{this.$route.query.mailbox}}{{ $t('ForgetPassword.mailboxtoreceiveit') }}
             <span></span>
           </div>
         </div>
@@ -36,6 +36,7 @@
 <script>
 import Header from "@/components/Header.vue";
 import Bottom from "@/components/Bottom.vue";
+import { POST_ToEmailForget, POST_EmailForgetVerification } from "@/api/api";
 
 export default {
   name: "VerificationCode",
@@ -45,12 +46,12 @@ export default {
   },
   data() {
     return {
-      show: true,
+      show: false,
       count: 60,
       timer: null,
       code: "",
       buttonStatus: false,
-      status: true,
+      status: false,
       timers: null,
       codeNum: 3,
       codeStatus: true
@@ -79,12 +80,32 @@ export default {
       if (!this.buttonStatus) {
         return false
       }
-      this.$router.push("/ResetPassword")
+      const form = {
+        email: this.$route.query.mailbox,
+        code: this.code
+      }
+      POST_EmailForgetVerification(form).then(res => {
+        if (res.code == 200) {
+          this.$router.push({
+            path: "/ResetPassword",
+            query: {
+              mailbox: this.$route.query.mailbox,
+              code: this.code,
+              code_token: res.data.code_token
+            }
+          })
+        } else {
+          this.status = true
+        }
+      })
     },
     // 验证码倒计时
     getCode(){
       if (this.show) {
-        console.log("从这里获取验证码")
+        const form = {
+          email: this.$route.query.mailbox
+        }
+        POST_ToEmailForget(form).then(res => {})
       }
       const TIME_COUNT = 59;
       if (!this.timer) {

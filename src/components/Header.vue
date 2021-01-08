@@ -18,20 +18,27 @@
         </button>
 
         <button v-if="routeStatus">
-          <el-dropdown placement="bottom" @command="handleCommand">
+          <el-dropdown placement="bottom" @command="handleCommand" @visible-change="LoginSwitchOpen">
             <span class="el-dropdown-link">
-              <img :title="$t('header.Personalcenter')" class="defaultImg" src="@/assets/img/PersonalCenter.png" alt="" />
-              <img :title="$t('header.Personalcenter')" class="selectImg" src="@/assets/img/PersonalCenterSelect.png" alt="" />
+              <img :title="$t('header.Personalcenter')" v-if="!LoginSwitchStatus && !PersonalCenterStatus" src="@/assets/img/PersonalCenter.png" alt="" />
+              <img :title="$t('header.Personalcenter')" v-if="(PersonalCenterStatus || LoginSwitchStatus) && token" src="@/assets/img/PersonalCenterSelect.png" alt="" />
+              <img :title="$t('header.Personalcenter')" v-if="LoginSwitchStatus && !token" src="@/assets/img/PersonalCenterSelects.png" alt="" />
             </span>
             <el-dropdown-menu slot="dropdown">
               <!-- 有token -->
-              <el-dropdown-item command="1">{{ $t('header.Personalcenter') }}</el-dropdown-item>
-              <el-dropdown-item command="2" divided>
+              <el-dropdown-item v-if="token" command="1">
+                <p class="dropdown_item_width">{{ $t('header.Personalcenter') }}</p>
+              </el-dropdown-item>
+              <el-dropdown-item v-if="token" command="2" divided>
                 <span class="loginOut">{{ $t('header.Signout') }}</span>
               </el-dropdown-item>
               <!-- 无token -->
-              <!-- <el-dropdown-item command="3">{{ $t('header.Signin') }}</el-dropdown-item>
-              <el-dropdown-item command="4" divided>{{ $t('header.registered') }}</el-dropdown-item> -->
+              <el-dropdown-item v-if="!token" command="3">
+                <p class="dropdown_item_width">{{ $t('header.Signin') }}</p>
+              </el-dropdown-item>
+              <el-dropdown-item v-if="!token" command="4" divided>
+                <p class="dropdown_item_width">{{ $t('header.registered') }}</p>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </button>
@@ -39,13 +46,17 @@
         <button :class="LanguageSwitchStatus ? 'active' : ''">
           <el-dropdown placement="bottom" @command="handleCommands" @visible-change="LanguageSwitchOpen">
             <span class="el-dropdown-link LanguageSwitch">
-              繁中
+              {{ $t('header.Language') }}
               <img v-if="!LanguageSwitchStatus" src="@/assets/img/LanguageSwitch.png" alt="" />
               <img v-if="LanguageSwitchStatus" src="@/assets/img/LanguageSwitchSelect.png" alt="" />
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="1">繁體中文</el-dropdown-item>
-              <el-dropdown-item command="2">English</el-dropdown-item>
+              <el-dropdown-item command="1">
+                <p class="dropdown_item_width">繁體中文</p>
+              </el-dropdown-item>
+              <el-dropdown-item command="2">
+                <p class="dropdown_item_width">English</p>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </button>
@@ -61,11 +72,11 @@
         <p v-if="routeStatus" @click="toRouter('/FAQ')">{{ $t("header.FAQ") }}</p>
         <p v-if="routeStatus" @click="toRouter('/ShoppingCart')">{{ $t("header.ShoppingCart") }}</p>
         <!-- 有token -->
-        <p v-if="routeStatus" @click="toRouter('/DataEditing')">{{ $t("header.Personalcenter") }}</p>
-        <p v-if="routeStatus" @click="popupStatus = true">{{ $t("header.Signout") }}</p>
+        <p v-if="routeStatus && token" @click="toRouter('/DataEditing')">{{ $t("header.Personalcenter") }}</p>
+        <p v-if="routeStatus && token" @click="popupStatus = true">{{ $t("header.Signout") }}</p>
         <!-- 无token -->
-        <!-- <p v-if="routeStatus" @click="toRouter('/Login')">{{ $t("header.Signin") }}</p>
-        <p v-if="routeStatus" @click="toRouter('/Registered')">{{ $t("header.registered") }}</p> -->
+        <p v-if="routeStatus && !token" @click="toRouter('/Login')">{{ $t("header.Signin") }}</p>
+        <p v-if="routeStatus && !token" @click="toRouter('/Registered')">{{ $t("header.registered") }}</p>
         <p @click="handleCommands(1)">繁體中文</p>
         <p @click="handleCommands(2)">English</p>
       </div>
@@ -99,6 +110,8 @@
 
 <script>
 import Popup from "@/components/Popup.vue";
+import { POST_GetCart } from "@/api/api";
+
 export default {
   name: "Header",
   components: {
@@ -108,8 +121,11 @@ export default {
     return {
       popupStatus: false,
       status: false,
+      LoginSwitchStatus: false,
       LanguageSwitchStatus: false,
-      routeStatus: false
+      routeStatus: false,
+      token: sessionStorage.getItem("token"),
+      PersonalCenterStatus: false,
     }
   },
   computed: {
@@ -118,13 +134,13 @@ export default {
     }
   },
   watch: {
-    status: function() {
-      if (this.status) {
-        this.noScroll()
-      } else {
-        this.canScroll()
-      }
-    }
+    // status: function() {
+    //   if (this.status) {
+    //     this.noScroll()
+    //   } else {
+    //     this.canScroll()
+    //   }
+    // }
   },
   mounted() {
     if (
@@ -138,10 +154,35 @@ export default {
     } else {
       this.routeStatus = true
     }
+    if (
+      this.$route.path == '/DataEditing' ||
+      this.$route.path == '/ChangePassword' ||
+      this.$route.path == '/OrderManagement'
+    ) {
+      this.PersonalCenterStatus = true
+    } else {
+      this.PersonalCenterStatus = false
+    }
+  },
+  created() {
+    if (sessionStorage.getItem('token') &&  this.$route.path != '/Login') {
+      this._GetCart()
+    }
   },
   methods: {
+    // 获取购物车
+    _GetCart() {
+      POST_GetCart().then(res => {
+        if (res.code == 200) {
+          this.$store.commit("cart/setCartCount", res.data.total_items);
+        }
+      })
+    },
     // 登出
     SignoutClick() {
+      // 清除token
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('userInfo')
       this.$router.push('/Login')
     },
     // 个人中心
@@ -155,6 +196,10 @@ export default {
       } else if (command == 4) {
         this.$router.push("/Registered")
       }
+    },
+    // 个人中心下拉状态
+    LoginSwitchOpen(flag) {
+      this.LoginSwitchStatus = flag
     },
     // 语言切换
     handleCommands(command) {
@@ -188,10 +233,15 @@ export default {
 
 <style lang="scss">
 .el-dropdown-menu {
-  width: 166px !important;
   text-align: center !important;
   .loginOut {
     color: #FF3321;
+  }
+  .dropdown_item_width {
+    width: 126px;
+  }
+  .ProductZone_content_h2_p {
+    text-align: left;
   }
 }
 .Header {
