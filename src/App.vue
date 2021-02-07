@@ -4,6 +4,17 @@
   </div>
 </template>
 
+<script>
+export default {
+  mounted() {
+    // 存储
+    if (!localStorage.getItem("locale")) {
+      localStorage.setItem("locale", "zh");
+    }
+  }
+}
+</script>
+
 <style lang="scss" scoped>
 // 顶部导航样式适配
 #app {

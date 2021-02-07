@@ -8,11 +8,11 @@
       <div class="Login_box_content">
         <h1 class="Login_box_content_title">{{ $t('login.Accountlogin') }}</h1>
         <div class="Login_box_content_input">
-          <input type="text" :placeholder="$t('login.yourmailbox')" v-model="mailbox" />
+          <input type="text" :placeholder="$t('login.yourmailbox')" v-model="mailbox" @keyup.enter='SigninClick()' />
         </div>
         <div class="Login_box_content_input">
-          <input v-if="inputStatus" v-model="password" type="text" :placeholder="$t('login.yourpassword')" />
-          <input v-if="!inputStatus" v-model="password" type="password" :placeholder="$t('login.yourpassword')" />
+          <input v-if="inputStatus" v-model="password" type="text" :placeholder="$t('login.yourpassword')" @keyup.enter='SigninClick()' />
+          <input v-if="!inputStatus" v-model="password" type="password" :placeholder="$t('login.yourpassword')" @keyup.enter='SigninClick()' />
           <img v-if="!inputStatus" class="Login_box_content_input_img" src="@/assets/img/login1.png" @click="inputStatus = !inputStatus" alt="" />
           <img v-if="inputStatus"  class="Login_box_content_input_img" src="@/assets/img/login1Select.png" @click="inputStatus = !inputStatus" alt="" />
           <!-- <p class="Login_box_content_input_p" v-if="status">

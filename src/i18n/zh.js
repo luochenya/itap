@@ -24,9 +24,9 @@ export default {
   },
   bottom: {
     contactus: "聯絡我們",
-    Address: "地址：台北市信義區信義路1號100樓",
-    Contactnumber: "聯絡電話：02-12345678",
-    email: "電子信箱：lmcinternational@gmail.com",
+    Address: "地址：桃園市中壢區中山東路二段445號",
+    Contactnumber: "電話：0938177171",
+    email: "信箱：Htech.itap@gmail.com",
     PrivacyPolicy: "隱私政策條款",
     Membershipterms: "會員服務條款",
     ItapAllrightsreserved: "© iTap版權所有"

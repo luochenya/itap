@@ -26,12 +26,12 @@
           </div>
         </div>
         <!-- 付款信息 -->
-        <p class="PaymentMessage_box_content_p" v-if="paymentMethod == 2">
+        <!-- <p class="PaymentMessage_box_content_p" v-if="paymentMethod == 2">
           {{ $t('PaymentMessage.bank') }}：xxxxx{{ $t('PaymentMessage.bank') }}
         </p>
         <p class="PaymentMessage_box_content_p" v-if="paymentMethod == 2">
           {{ $t('PaymentMessage.accountnumber') }}：xxxxx
-        </p>
+        </p> -->
         <!-- 聯絡電話 -->
         <div class="PaymentMessage_box_content_div">
           <p class="PaymentMessage_box_content_div_p">{{ $t('PaymentMessage.Contactnumber') }}</p>
@@ -233,7 +233,8 @@ export default {
     // 弹窗确定
     popupDetermine() {
       if (this.paymentMethod == 2) {
-        this.$router.push("/OrderThanks")
+        // this.$router.push("/OrderThanks")
+        window.location.href = this.$priceUrl + "web/Member/lj_atm_pay?order_id=" + this.order_id;
       } else {
         window.location.href = this.$priceUrl + "web/Member/lj_pay?order_id=" + this.order_id;
       }

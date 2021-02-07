@@ -50,11 +50,13 @@ export default {
   methods: {
     // 隐私条款
     toPrivacyPolicy() {
-      window.open("https://itap.com.tw/Front/htmlview/7")
+      let value = localStorage.getItem("locale") == 'zh' ? 'tw' : localStorage.getItem("locale")
+      window.open("https://itap.com.tw/Front/htmlview/7?lang=" + value)
     },
     // 会员条款
     toMembershipterms() {
-      window.open("https://itap.com.tw/Front/htmlview/6")
+      let value = localStorage.getItem("locale") == 'zh' ? 'tw' : localStorage.getItem("locale")
+      window.open("https://itap.com.tw/Front/htmlview/6?lang=" + value)
     }
   }
 }

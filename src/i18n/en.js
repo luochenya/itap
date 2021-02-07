@@ -24,9 +24,9 @@ export default {
   },
   bottom: {
     contactus: "Contact us",
-    Address: "Address: 100th Floor, No. 1, Xinyi Road, Xinyi District, Taipei City",
-    Contactnumber: "Contact number: 02-12345678",
-    email: "Email：lmcinternational@gmail.com",
+    Address: "Address: No. 445, Sec. 2, Zhongshan E. Rd., Zhongli Dist., Taoyuan City 320, Taiwan (R.O.C.)",
+    Contactnumber: "Phone: 0938177171",
+    email: "Email：Htech.itap@gmail.com",
     PrivacyPolicy: "Privacy policy terms",
     Membershipterms: "Member Service Terms",
     ItapAllrightsreserved: "© iTap All rights reserved"

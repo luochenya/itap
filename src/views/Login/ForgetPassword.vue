@@ -8,7 +8,7 @@
         <h2 class="ForgetPassword_box_content_h2">{{ $t('ForgetPassword.Enteryourmailbox') }}</h2>
         <h3 class="ForgetPassword_box_content_h3">{{ $t('ForgetPassword.resetyourpassword') }}</h3>
         <div class="ForgetPassword_box_content_input">
-          <input type="text" :placeholder="$t('ForgetPassword.Pleaseenteryourmailbox')" v-model="mailbox" />
+          <input type="text" :placeholder="$t('ForgetPassword.Pleaseenteryourmailbox')" v-model="mailbox" @keyup.enter='toVerificationCode()' />
         </div>
         <div class="ForgetPassword_box_content_button">
           <button :class="buttonStatus ? 'active' : ''" @click="toVerificationCode()">{{ $t('ForgetPassword.Nextstep') }}</button>

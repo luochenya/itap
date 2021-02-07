@@ -78,7 +78,8 @@
       </div>
       <div class="Home_application_img">
         <img class="Home_application_img_bg" src="@/assets/img/Home_application1.png" alt="" />
-        <img class="Home_application_img_button" src="@/assets/img/Home_application.png" alt="">
+        <!-- 播放按钮 -->
+        <!-- <img class="Home_application_img_button" src="@/assets/img/Home_application.png" alt=""> -->
       </div>
     </div>
     <!-- 底部导航组件 -->

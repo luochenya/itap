@@ -51,8 +51,8 @@ if (process.env.NODE_ENV == "development") {
 
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded";
-axios.defaults.headers.post["lang"] = localStorage.getItem("locale");
-axios.defaults.headers.get["lang"] = localStorage.getItem("locale");
+axios.defaults.headers.post["lang"] = localStorage.getItem("locale") == 'zh' ? 'tw' : localStorage.getItem("locale");
+axios.defaults.headers.get["lang"] = localStorage.getItem("locale") == 'zh' ? 'tw' : localStorage.getItem("locale");
 
 // if (sessionStorage.getItem("token")) {
 //   axios.defaults.headers.post["token"] = sessionStorage.getItem("token");

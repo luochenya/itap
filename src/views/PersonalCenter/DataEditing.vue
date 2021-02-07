@@ -45,7 +45,7 @@
                 </button>
               </div>
               <h3 class="userData_right_h3">{{ $t('DataEditing.Aftermakingitpublic') }}</h3>
-              <h4 class="userData_right_h4" @click="toWebsite()">{{url}}/vue/#/Access?id={{userInfo.id}}</h4>
+              <h4 class="userData_right_h4" @click="toWebsite()">{{url}}/vue/#/Access?id={{userInfo.id}}&lang={{type}}</h4>
             </div>
           </div>
           <div class="storeButton">
@@ -96,6 +96,7 @@ export default {
       popupStatus: false,
       userInfo: JSON.parse(sessionStorage.getItem("userInfo")),
       user_head: '',
+      type: localStorage.getItem("locale") == 'zh' ? 'tw' : localStorage.getItem("locale")
     }
   },
   methods: {
@@ -127,7 +128,8 @@ export default {
       this.$router.push({
         path: "/Access",
         query: {
-          id: this.userInfo.id
+          id: this.userInfo.id,
+          lang: this.type
         }
       })
     },

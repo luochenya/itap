@@ -32,7 +32,7 @@
         <br />
         {{ $t('Partner.Pleasewriteto') }}
       </h2>
-      <h3>cooperation@itap.com</h3>
+      <h3>Htech.itap@gmail.com</h3>
     </div>
     <!-- 底部导航组件 -->
     <Bottom />

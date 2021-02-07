@@ -163,6 +163,19 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.FAQ {
+  .FAQ_content {
+    .box_content * {
+      margin: revert;
+      padding: revert;
+      font-size: revert;
+      font: revert;
+      vertical-align: revert;
+    }
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .FAQ {
@@ -383,6 +396,11 @@ export default {
               .active {
                 transform: rotate(180deg);
               }
+            }
+            .box_content::after{
+              content: "";
+              display: block;
+              clear: both;
             }
             .box_content {
               margin-top: 15px;

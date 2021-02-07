@@ -8,13 +8,13 @@
         <h2 class="Registered_box_content_h2">{{ $t('Registered.yourinformation') }}</h2>
         <h3 class="Registered_box_content_h3">{{ $t('Registered.facilitateaccountcreation') }}</h3>
         <div class="Registered_box_content_input">
-          <input type="text" :placeholder="$t('Registered.pleaseenterusername')" v-model="userName" />
+          <input type="text" :placeholder="$t('Registered.pleaseenterusername')" v-model="userName" @keyup.enter='Submit()' />
         </div>
         <div class="Registered_box_content_input">
-          <input type="text" :placeholder="$t('Registered.Pleaseentermailbox')" v-model="mailbox" />
+          <input type="text" :placeholder="$t('Registered.Pleaseentermailbox')" v-model="mailbox" @keyup.enter='Submit()' />
         </div>
         <div class="Registered_box_content_input">
-          <input type="text" :placeholder="$t('Registered.Pleaseenterpassword')" v-model="password" />
+          <input type="text" :placeholder="$t('Registered.Pleaseenterpassword')" v-model="password" @keyup.enter='Submit()' />
         </div>
         <div class="Registered_box_content_button">
           <button :class="buttonStatus ? 'active' : ''" @click="Submit()">{{ $t('Registered.Register') }}</button>

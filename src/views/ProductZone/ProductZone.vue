@@ -80,9 +80,9 @@
             <div class="ProductZone_content_box_div_price">
               <p :title="item.name">{{ item.name }}</p>
               <div>
-                <h4 v-if="!item.good_price">$ {{ $Thousands(item.price) }}</h4>
-                <h5 v-if="item.good_price">$ {{ $Thousands(item.price) }}</h5>
-                <h6 v-if="item.good_price">$ {{ $Thousands(item.good_price) }}</h6>
+                <h4 v-if="item.is_good_price == '0'">$ {{ $Thousands(item.price) }}</h4>
+                <h5 v-if="item.is_good_price == '1'">$ {{ $Thousands(item.price) }}</h5>
+                <h6 v-if="item.is_good_price == '1'">$ {{ $Thousands(item.good_price) }}</h6>
               </div>
             </div>
           </div>
@@ -354,6 +354,7 @@ export default {
           justify-content: space-between;
           align-items: center;
           p {
+            width: 45%;
             font-size: 18px;
             font-weight: 500;
             color: #F2F2F2;
@@ -364,7 +365,7 @@ export default {
             word-break: break-all;
           }
           div {
-            padding: 6px 10px;
+            padding: 6px 8px;
             background: #1A1B1D;
             border-radius: 4px;
             display: flex;
@@ -376,7 +377,7 @@ export default {
               color: #007DFF;
             }
             h5 {
-              margin-right: 15px;
+              margin-right: 10px;
               color: #666666;
               text-decoration: line-through;
             }

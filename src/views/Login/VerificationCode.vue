@@ -8,7 +8,7 @@
         <h2 class="VerificationCode_box_content_h2">{{ $t('ForgetPassword.Enterconfirmationcode') }}</h2>
         <h3 class="VerificationCode_box_content_h3">{{ $t('ForgetPassword.resetthepassword') }}</h3>
         <div class="VerificationCode_box_content_input">
-          <input type="text" :placeholder="$t('ForgetPassword.pleaseenterverificationcode')" v-model="code" />
+          <input type="text" :placeholder="$t('ForgetPassword.pleaseenterverificationcode')" v-model="code" @keyup.enter='toResetPassword()' />
           <button @click="getCode()">{{ $t('ForgetPassword.Reacquire') }}({{count}}s)</button>
           <p v-if="status">
             <img src="@/assets/img/login2.png" alt="" />

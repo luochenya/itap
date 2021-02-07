@@ -8,14 +8,14 @@
         <h2 class="ResetPassword_box_content_h2">{{ $t('ResetPassword.Fillinnewpassword') }}</h2>
         <h3 class="ResetPassword_box_content_h3">{{ $t('ResetPassword.loginagain') }}</h3>
         <div class="ResetPassword_box_content_input">
-          <input v-if="passwordStatus" v-model="password" :placeholder="$t('ResetPassword.Pleaseenterpassword')" type="text" />
-          <input v-if="!passwordStatus" v-model="password" :placeholder="$t('ResetPassword.Pleaseenterpassword')" type="password" />
+          <input v-if="passwordStatus" v-model="password" :placeholder="$t('ResetPassword.Pleaseenterpassword')" type="text" @keyup.enter='Submit()' />
+          <input v-if="!passwordStatus" v-model="password" :placeholder="$t('ResetPassword.Pleaseenterpassword')" type="password" @keyup.enter='Submit()' />
           <img v-if="!passwordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1.png" @click="passwordStatus = !passwordStatus" alt="" />
           <img v-if="passwordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1Select.png" @click="passwordStatus = !passwordStatus" alt="" />
         </div>
         <div class="ResetPassword_box_content_input">
-          <input v-if="confirmPasswordStatus" v-model="confirmPassword" :placeholder="$t('ResetPassword.Enterthepasswordagain')" type="text" />
-          <input v-if="!confirmPasswordStatus" v-model="confirmPassword" :placeholder="$t('ResetPassword.Enterthepasswordagain')" type="password" />
+          <input v-if="confirmPasswordStatus" v-model="confirmPassword" :placeholder="$t('ResetPassword.Enterthepasswordagain')" type="text" @keyup.enter='Submit()' />
+          <input v-if="!confirmPasswordStatus" v-model="confirmPassword" :placeholder="$t('ResetPassword.Enterthepasswordagain')" type="password" @keyup.enter='Submit()' />
           <img v-if="!confirmPasswordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1.png" @click="confirmPasswordStatus = !confirmPasswordStatus" alt="" />
           <img v-if="confirmPasswordStatus" class="ResetPassword_box_content_input_img" src="@/assets/img/login1Select.png" @click="confirmPasswordStatus = !confirmPasswordStatus" alt="" />
         </div>
